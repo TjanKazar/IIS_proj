@@ -1,0 +1,36 @@
+name: Fetch traffic data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  fetch_traffic:
+    name: Fetch and append traffic data
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run scraper
+        run: python traffic_scraper.py
+
+      - name: Commit data changes
+        run: |
+          git add traffic.csv
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git diff --staged --quiet || git commit -m "Update traffic data $(date -u '+%Y-%m-%d %H:%M UTC')"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.PAT_TOKEN }}
