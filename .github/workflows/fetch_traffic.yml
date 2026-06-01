@@ -3,7 +3,7 @@ name: Fetch traffic data
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/15 * * * *'
 
 jobs:
   fetch_traffic:
