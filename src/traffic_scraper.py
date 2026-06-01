@@ -25,6 +25,13 @@ all_rows = [
 header = all_rows[0]
 data_rows = all_rows[1:]
  
+last_road = ""
+for row in data_rows:
+    if row[0]:
+        last_road = row[0]
+    else:
+        row[0] = last_road
+ 
 # Columns: road(0), location(1), direction(2), ..., time(7)
 # Dedup key: location + direction + time
 def row_key(row):
@@ -48,3 +55,4 @@ with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:
     writer.writerows(new_rows)
  
 print(f"{len(new_rows)} new rows added ({len(data_rows) - len(new_rows)} duplicates skipped)")
+ 
