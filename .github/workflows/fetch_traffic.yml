@@ -21,11 +21,11 @@ jobs:
         run: pip install requests beautifulsoup4
 
       - name: Run scraper
-        run: python traffic_scraper.py
+        run: python src/traffic_scraper.py
 
       - name: Commit data changes
         run: |
-          git add traffic.csv
+          git add data/traffic.csv
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git diff --staged --quiet || git commit -m "Update traffic data $(date -u '+%Y-%m-%d %H:%M UTC')"
