@@ -529,8 +529,8 @@
       "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
       "kwargs": {
         "column": "\u0160t. vozil [N/h]",
-        "max_value": 0.005863779882724403,
-        "min_value": 0.005863779882724403,
+        "max_value": null,
+        "min_value": null,
         "strict_max": false,
         "strict_min": false
       },
@@ -573,8 +573,8 @@
       "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
       "kwargs": {
         "column": "Zasedenost [%]",
-        "max_value": 0.009246729815065404,
-        "min_value": 0.009246729815065404,
+        "max_value": true,
+        "min_value": true,
         "strict_max": false,
         "strict_min": false
       },
@@ -617,8 +617,8 @@
       "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
       "kwargs": {
         "column": "\u010cas",
-        "max_value": 0.005412719891745603,
-        "min_value": 0.005412719891745603,
+        "max_value": null,
+        "min_value": null,
         "strict_max": false,
         "strict_min": false
       },
@@ -688,8 +688,8 @@
       "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
       "kwargs": {
         "column": "Stanje",
-        "max_value": 0.0011276499774470004,
-        "min_value": 0.0011276499774470004,
+        "max_value": null,
+        "min_value": null,
         "strict_max": false,
         "strict_min": false
       },

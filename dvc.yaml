@@ -1,10 +1,6 @@
 stages:
   fetch:
-    cmd: |
-      uv run python src/traffic_scraper.py
-      git commit -am "Updated raw traffic data on `date` with DVC pipeline and GitHub workflows" || true
-      git push || true
-      dvc push || true
+    cmd: uv run python src/traffic_scraper.py
     deps:
       - src/traffic_scraper.py
     params:
@@ -16,11 +12,7 @@ stages:
     always_changed: true
 
   preprocess:
-    cmd: |
-      uv run python src/traffic_preprocess.py
-      git commit -am "Updated preprocessed traffic data on `date` with DVC pipeline and GitHub workflows" || true
-      git push || true
-      dvc push || true
+    cmd: uv run python src/traffic_preprocess.py
     deps:
       - src/traffic_preprocess.py
       - data/traffic.csv
