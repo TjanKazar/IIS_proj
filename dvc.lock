@@ -1,9 +1,7 @@
 schema: '2.0'
 stages:
   fetch:
-    cmd: "uv run python src/traffic_scraper.py\ngit commit -am \"Updated raw traffic
-      data on `date` with DVC pipeline and GitHub workflows\" || true\ngit push ||
-      true\ndvc push || true\n"
+    cmd: uv run python src/traffic_scraper.py
     deps:
     - path: src/traffic_scraper.py
       hash: md5
@@ -16,17 +14,15 @@ stages:
     outs:
     - path: data/traffic.csv
       hash: md5
-      md5: 7826cfd131216164cc53159595bbb953
-      size: 848579
+      md5: b35b58414c9b5ff0507b7f8d493db011
+      size: 1191560
   preprocess:
-    cmd: "uv run python src/traffic_preprocess.py\ngit commit -am \"Updated preprocessed
-      traffic data on `date` with DVC pipeline and GitHub workflows\" || true\ngit
-      push || true\ndvc push || true\n"
+    cmd: uv run python src/traffic_preprocess.py
     deps:
     - path: data/traffic.csv
       hash: md5
-      md5: 448d44a7197935e99b1b6263c059870f
-      size: 637507
+      md5: b35b58414c9b5ff0507b7f8d493db011
+      size: 1191560
     - path: src/traffic_preprocess.py
       hash: md5
       md5: ff7c294f07e1f75ccf344601f47d106d
@@ -38,5 +34,5 @@ stages:
     outs:
     - path: data/preprocessed/traffic.csv
       hash: md5
-      md5: 24a515cd7b5c8a7e8aabe84b461a507c
-      size: 630060
+      md5: f7093eebca1d1925d4accc793d9d2ce7
+      size: 1173910
