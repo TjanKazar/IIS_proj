@@ -16,8 +16,8 @@ stages:
     outs:
     - path: data/traffic.csv
       hash: md5
-      md5: 6c368727416c2e71318fe24f03fdf302
-      size: 427746
+      md5: 448d44a7197935e99b1b6263c059870f
+      size: 637507
   preprocess:
     cmd: "uv run python src/traffic_preprocess.py\ngit commit -am \"Updated preprocessed
       traffic data on `date` with DVC pipeline and GitHub workflows\" || true\ngit
