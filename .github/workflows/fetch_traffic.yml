@@ -17,15 +17,24 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
-      - name: Install dependencies
-        run: pip install requests beautifulsoup4 pyaml
+      - name: Install uv
+        run: pip install uv
 
-      - name: Run scraper
-        run: python src/traffic_scraper.py
+      - name: Sync dependencies
+        run: uv sync --frozen
 
-      - name: Commit data changes
+      - name: Run DVC pipeline
+        run: uv run dvc repro
+
+      - name: Push data to DVC remote
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: uv run dvc push
+
+      - name: Commit DVC metadata
         run: |
-          git add data/traffic.csv
+          git add dvc.lock
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git diff --staged --quiet || git commit -m "Update traffic data $(date -u '+%Y-%m-%d %H:%M UTC')"
