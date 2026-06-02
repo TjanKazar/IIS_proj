@@ -63,7 +63,9 @@ def fetch_traffic_data():
     file_exists = output_path.exists()
     if file_exists:
         with output_path.open(newline="", encoding="utf-8") as file:
-            for row in csv.reader(file):
+            for index, row in enumerate(csv.reader(file)):
+                if index == 0 or not row:
+                    continue
                 if len(row) < 8:
                     existing_keys.add(tuple(row))
                 else:

@@ -11,7 +11,8 @@ stages:
       - fetch.url
       - fetch.output
     outs:
-      - data/traffic.csv
+      - data/traffic.csv:
+          persist: true
     always_changed: true
 
   preprocess:
