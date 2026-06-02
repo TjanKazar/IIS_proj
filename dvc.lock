@@ -25,8 +25,8 @@ stages:
     deps:
     - path: data/traffic.csv
       hash: md5
-      md5: 18b53549f9b5987dd49402a7772d460d
-      size: 216189
+      md5: 6c368727416c2e71318fe24f03fdf302
+      size: 427746
     - path: src/traffic_preprocess.py
       hash: md5
       md5: ff7c294f07e1f75ccf344601f47d106d
@@ -38,5 +38,5 @@ stages:
     outs:
     - path: data/preprocessed/traffic.csv
       hash: md5
-      md5: 6225d93fa0520e6ae6eb5768238e2113
-      size: 213990
+      md5: 6d942be2f85450b9e638bd220a122819
+      size: 423006
