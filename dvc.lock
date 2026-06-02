@@ -7,8 +7,8 @@ stages:
     deps:
     - path: src/traffic_scraper.py
       hash: md5
-      md5: 11308159e4451fd4985471d0176f57e9
-      size: 2497
+      md5: 41e5791857f35c1014e28c7899ea1f25
+      size: 2586
     params:
       params.yaml:
         fetch.output: data/traffic.csv
@@ -16,8 +16,8 @@ stages:
     outs:
     - path: data/traffic.csv
       hash: md5
-      md5: 18b53549f9b5987dd49402a7772d460d
-      size: 216189
+      md5: 6c368727416c2e71318fe24f03fdf302
+      size: 427746
   preprocess:
     cmd: "uv run python src/traffic_preprocess.py\ngit commit -am \"Updated preprocessed
       traffic data on `date` with DVC pipeline and GitHub workflows\" || true\ngit
