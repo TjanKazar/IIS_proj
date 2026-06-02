@@ -14,15 +14,15 @@ stages:
     outs:
     - path: data/traffic.csv
       hash: md5
-      md5: b35b58414c9b5ff0507b7f8d493db011
-      size: 1191560
+      md5: fa50b488636780b268504f5bef382264
+      size: 1611598
   preprocess:
     cmd: uv run python src/traffic_preprocess.py
     deps:
     - path: data/traffic.csv
       hash: md5
-      md5: b35b58414c9b5ff0507b7f8d493db011
-      size: 1191560
+      md5: fa50b488636780b268504f5bef382264
+      size: 1611598
     - path: src/traffic_preprocess.py
       hash: md5
       md5: ff7c294f07e1f75ccf344601f47d106d
@@ -34,5 +34,13 @@ stages:
     outs:
     - path: data/preprocessed/traffic.csv
       hash: md5
-      md5: f7093eebca1d1925d4accc793d9d2ce7
-      size: 1173910
+      md5: 4cfd574e38ca9ef5f7c6d15949573139
+      size: 1587164
+  validate:
+    cmd: "cd gx && uv run python run_checkpoint.py\n"
+    deps:
+    - path: data/preprocessed/
+      hash: md5
+      md5: 1d8765a951e6ef50caefe587504e4d02.dir
+      size: 1587164
+      nfiles: 1
