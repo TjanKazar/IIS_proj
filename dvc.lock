@@ -14,15 +14,15 @@ stages:
     outs:
     - path: data/traffic.csv
       hash: md5
-      md5: 828f4d2727f8a743d6a6b48eeacc212e
-      size: 224849
+      md5: 6b6bd0e09b058af424f27394cfc0cd73
+      size: 224985
   preprocess:
     cmd: uv run python src/traffic_preprocess.py
     deps:
     - path: data/traffic.csv
       hash: md5
-      md5: 828f4d2727f8a743d6a6b48eeacc212e
-      size: 224849
+      md5: 6b6bd0e09b058af424f27394cfc0cd73
+      size: 224985
     - path: src/traffic_preprocess.py
       hash: md5
       md5: ff7c294f07e1f75ccf344601f47d106d
@@ -34,5 +34,5 @@ stages:
     outs:
     - path: data/preprocessed/traffic.csv
       hash: md5
-      md5: 828f4d2727f8a743d6a6b48eeacc212e
-      size: 224849
+      md5: 6b6bd0e09b058af424f27394cfc0cd73
+      size: 224985

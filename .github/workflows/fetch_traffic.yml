@@ -1,13 +1,13 @@
-name: Fetch traffic data
+name: Fetch data on schedule
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '0 0 * * *'
 
 jobs:
-  fetch_traffic:
-    name: Fetch and append traffic data
+  fetch_air:
+    name: Fetch and pre-process air data
     runs-on: ubuntu-latest
 
     steps:
@@ -17,27 +17,46 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
-      - name: Install uv
-        run: pip install uv
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
 
-      - name: Sync dependencies
-        run: uv sync --frozen
-
-      - name: Run DVC pipeline
-        run: uv run dvc repro
-
-      - name: Push data to DVC remote
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: uv run dvc push
-
-      - name: Commit DVC metadata
+      - name: Install pipx and uv
         run: |
-          git add dvc.lock
+          python -m pip install --upgrade pip
+          python -m pip install pipx
+          python -m pipx ensurepath || true
+          pipx install uv || python -m pip install uv
+
+      - name: Setup DVC
+        uses: iterative/setup-dvc@v1
+
+      - name: Setup Git
+        run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git diff --staged --quiet || git commit -m "Update traffic data $(date -u '+%Y-%m-%d %H:%M UTC')"
+
+      - name: Install runtime deps
+        run: |
+          uv sync --frozen
+
+      - name: DVC setup remote
+        env:
+          DAGSHUB_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          DAGSHUB_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          dvc remote modify origin --local access_key_id $DAGSHUB_ACCESS_KEY_ID
+          dvc remote modify origin --local secret_access_key $DAGSHUB_SECRET_ACCESS_KEY
+
+      - name: Run DVC pipeline
+        run: |
+          dvc pull || true
+          dvc status || true
+          dvc repro
+          dvc push
+          git add dvc.lock
+          git diff --staged --quiet || git commit -m "Update dvc.lock on `date` with GitHub Actions" || true
 
       - name: Push changes
         uses: ad-m/github-push-action@master
