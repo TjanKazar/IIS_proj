@@ -1,0 +1,7 @@
+fetch:
+  url: "http://portal.drsc.si/traffic/loclist_si.htm"
+  output: "data/traffic.csv"
+
+preprocess:
+  input: "data/traffic.csv"
+  output: "data/preprocessed/traffic.csv"

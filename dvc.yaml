@@ -1,0 +1,22 @@
+stages:
+  fetch:
+    cmd: uv run python src/traffic_scraper.py
+    deps:
+      - src/traffic_scraper.py
+    params:
+      - fetch.url
+      - fetch.output
+    outs:
+      - data/traffic.csv
+    always_changed: true
+
+  preprocess:
+    cmd: uv run python src/traffic_preprocess.py
+    deps:
+      - src/traffic_preprocess.py
+      - data/traffic.csv
+    params:
+      - preprocess.input
+      - preprocess.output
+    outs:
+      - data/preprocessed/traffic.csv

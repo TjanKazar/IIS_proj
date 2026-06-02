@@ -1,0 +1,38 @@
+schema: '2.0'
+stages:
+  fetch:
+    cmd: uv run python src/traffic_scraper.py
+    deps:
+    - path: src/traffic_scraper.py
+      hash: md5
+      md5: 11308159e4451fd4985471d0176f57e9
+      size: 2497
+    params:
+      params.yaml:
+        fetch.output: data/traffic.csv
+        fetch.url: http://portal.drsc.si/traffic/loclist_si.htm
+    outs:
+    - path: data/traffic.csv
+      hash: md5
+      md5: 38ec1af1fa318c85823d1e4a73711fd8
+      size: 224949
+  preprocess:
+    cmd: uv run python src/traffic_preprocess.py
+    deps:
+    - path: data/traffic.csv
+      hash: md5
+      md5: 38ec1af1fa318c85823d1e4a73711fd8
+      size: 224949
+    - path: src/traffic_preprocess.py
+      hash: md5
+      md5: ff7c294f07e1f75ccf344601f47d106d
+      size: 1647
+    params:
+      params.yaml:
+        preprocess.input: data/traffic.csv
+        preprocess.output: data/preprocessed/traffic.csv
+    outs:
+    - path: data/preprocessed/traffic.csv
+      hash: md5
+      md5: 38ec1af1fa318c85823d1e4a73711fd8
+      size: 224949
