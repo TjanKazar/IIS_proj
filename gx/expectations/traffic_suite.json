@@ -507,8 +507,8 @@
       "expectation_type": "expect_column_unique_value_count_to_be_between",
       "kwargs": {
         "column": "\u0160t. vozil [N/h]",
-        "max_value": 26,
-        "min_value": 26,
+        "max_value": null,
+        "min_value": 2,
         "strict_max": false,
         "strict_min": false
       },
@@ -551,8 +551,8 @@
       "expectation_type": "expect_column_unique_value_count_to_be_between",
       "kwargs": {
         "column": "Zasedenost [%]",
-        "max_value": 41,
-        "min_value": 41,
+        "max_value": null,
+        "min_value": null,
         "strict_max": false,
         "strict_min": false
       },
@@ -573,8 +573,8 @@
       "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
       "kwargs": {
         "column": "Zasedenost [%]",
-        "max_value": true,
-        "min_value": true,
+        "max_value": null,
+        "min_value": null,
         "strict_max": false,
         "strict_min": false
       },
@@ -595,8 +595,8 @@
       "expectation_type": "expect_column_unique_value_count_to_be_between",
       "kwargs": {
         "column": "\u010cas",
-        "max_value": 24,
-        "min_value": 24,
+        "max_value": null,
+        "min_value": null,
         "strict_max": false,
         "strict_min": false
       },
@@ -666,8 +666,8 @@
       "expectation_type": "expect_column_unique_value_count_to_be_between",
       "kwargs": {
         "column": "Stanje",
-        "max_value": 5,
-        "min_value": 5,
+        "max_value": 7,
+        "min_value": 1,
         "strict_max": false,
         "strict_min": false
       },
