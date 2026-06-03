@@ -60,10 +60,14 @@ jobs:
           git add dvc.lock
           git diff --staged --quiet || git commit -m "Update dvc.lock on `date` with GitHub Actions" || true
 
+      - name: Sync with remote
+        run: |
+          git fetch origin main
+          git pull --rebase origin main
+
       - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.PAT_TOKEN }}
+        run: |
+          git push origin main
 
       - name: Deploy DataDocs to Netlify
         uses: nwtgck/actions-netlify@v1.2
