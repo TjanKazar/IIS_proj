@@ -1,2 +1,5 @@
+# Ignore the contents of the uncommitted folder
+uncommitted/*
 
-uncommitted/
+# But do NOT ignore the data_docs folder inside it
+!uncommitted/data_docs/
