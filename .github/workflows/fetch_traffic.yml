@@ -61,7 +61,6 @@ jobs:
         id: commit
         run: |
           git add dvc.lock
-          git add data/reference/
           git add src/reports/
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
