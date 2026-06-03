@@ -622,7 +622,7 @@ img.dev-loop {
         <a href="#">
           <img
             class="NO-CACHE"
-            src="https://great-expectations-web-assets.s3.us-east-2.amazonaws.com/logo-long.png?d=20260603T002150.730898Z&dataContextId=e00270b0-07e4-4939-b396-0d76a9919608"
+            src="https://great-expectations-web-assets.s3.us-east-2.amazonaws.com/logo-long.png?d=20260603T103455.313724Z&dataContextId=e00270b0-07e4-4939-b396-0d76a9919608"
             alt="Great Expectations"
             style="width: auto; height: 50px"
           />
@@ -734,11 +734,24 @@ img.dev-loop {
       <li class="nav-item">
         <a
             class="nav-link active"
+            id="Validation-Results-tab"
+            data-toggle="tab"
+            href="#Validation-Results"
+            role="tab"
+            aria-selected="true"
+            aria-controls="Validation-Results">
+          Validation Results
+        </a>
+      </li>
+    
+      <li class="nav-item">
+        <a
+            class="nav-link"
             id="Expectation-Suites-tab"
             data-toggle="tab"
             href="#Expectation-Suites"
             role="tab"
-            aria-selected="true"
+            aria-selected="false"
             aria-controls="Expectation-Suites">
           Expectation Suites
         </a>
@@ -750,9 +763,9 @@ img.dev-loop {
     
       <div
         class="tab-pane fade show active"
-        id="Expectation-Suites"
+        id="Validation-Results"
         role="tabpanel"
-        aria-labelledby="Expectation-Suites-tab">
+        aria-labelledby="Validation-Results-tab">
         
 
 
@@ -771,7 +784,7 @@ img.dev-loop {
 
 <table
   id="section-1-content-block-2-1-body-table"
-  class="table-sm ge-index-page-expectation_suites-table" 
+  class="table-sm ge-index-page-validation-results-table" 
   data-toggle="table"
 >
 </table>
@@ -829,9 +842,111 @@ img.dev-loop {
   $('#section-1-content-block-2-1-body-table').bootstrapTable(
     Object.assign(
       {
+        columns: [{'field': 'validation_success', 'title': 'Status', 'sortable': 'true', 'align': 'center', 'filterControl': 'select', 'filterDataCollector': 'validationSuccessFilterDataCollector'}, {'field': 'run_time', 'title': 'Run Time', 'sortName': '_run_time_sort', 'sortable': 'true', 'filterControl': 'datepicker', 'filterCustomSearch': 'formatRuntimeDateForFilter', 'filterDatepickerOptions': {'clearBtn': 'true', 'autoclose': 'true', 'format': 'yyyy-mm-dd', 'todayHighlight': 'true'}}, {'field': 'run_name', 'title': 'Run Name', 'sortable': 'true', 'filterControl': 'input'}, {'field': 'asset_name', 'title': 'Asset Name', 'sortable': 'true', 'filterControl': 'select'}, {'field': 'batch_identifier', 'title': 'Batch ID', 'sortName': '_batch_identifier_sort', 'sortable': 'true', 'filterControl': 'input'}, {'field': 'expectation_suite_name', 'title': 'Expectation Suite', 'sortName': '_expectation_suite_name_sort', 'sortable': 'true', 'filterControl': 'select', 'filterDataCollector': 'expectationSuiteNameFilterDataCollector'}],
+        data: [{'validation_success': '\n                <span class="ge-index-page-table-validation-links-item" >\n                    <i class="fas fa-check-circle text-success ge-success-icon" ></i>\n                </span>\n            ', 'run_time': '2026-06-03 12:34:52 CEST', '_run_time_sort': 1780482892.058305, 'run_name': '__none__', 'batch_identifier': '\n                <span class="m-0 p-0 cooltip" >\n                    traffic-traffic_data\n                    <span class=top>\n                        Batch Spec:\n\n{\n  "path": "../data/preprocessed/traffic.csv",\n  "reader_method": "read_csv",\n  "reader_options": {}\n}\n                    </span>\n                </span>\n            ', '_batch_identifier_sort': 'traffic-traffic_data', 'expectation_suite_name': '\n                <a class="ge-index-page-table-expectation-suite-link" href="expectations/traffic_suite.html" style="word-break:break-all;" >\n                    traffic_suite\n                </a>\n            ', '_expectation_suite_name_sort': 'traffic_suite', '_table_row_link_path': 'validations/traffic_suite/__none__/20260603T103452.058305Z/traffic-traffic_data.html', '_validation_success_text': 'Success', 'asset_name': 'traffic_data'}],
+        toolbar: '#section-1-content-block-2-1-body-table-toolbar'
+      },
+      {'search': 'true', 'trimOnSearch': 'false', 'visibleSearch': 'true', 'rowStyle': 'rowStyleLinks', 'rowAttributes': 'rowAttributesLinks', 'sortName': 'run_time', 'sortOrder': 'desc', 'pagination': 'true', 'filterControl': 'true', 'iconSize': 'sm', 'toolbarAlign': 'right', 'showSearchClearButton': 'true'}
+    )
+  );
+
+  
+
+  
+    $(document).ready(function() {
+      $("#section-1-content-block-2-1-body-table").on('click-row.bs.table', function(e, row, $element) {
+          window.location = $element.data("href");
+        })
+      }
+    );
+  
+</script>
+      </div>
+    
+      <div
+        class="tab-pane fade"
+        id="Expectation-Suites"
+        role="tabpanel"
+        aria-labelledby="Expectation-Suites-tab">
+        
+
+
+
+
+
+
+  
+
+
+<div id="section-1-content-block-2-2-body-table-toolbar" class="ml-1">
+  
+    <button class="btn btn-sm btn-secondary ml-1" onclick="clearTableFilters('section-1-content-block-2-2-body-table')">Clear Filters</button>
+  
+</div>
+
+<table
+  id="section-1-content-block-2-2-body-table"
+  class="table-sm ge-index-page-expectation_suites-table" 
+  data-toggle="table"
+>
+</table>
+
+<script>
+  function rowStyleLinks(row, index) {
+    return {
+      css: {
+        cursor: "pointer"
+      }
+    }
+  }
+
+  function rowAttributesLinks(row, index) {
+    return {
+      "class": "clickable-row",
+      "data-href": row._table_row_link_path
+    }
+  }
+
+  function expectationSuiteNameFilterDataCollector(value, row, formattedValue) {
+    return row._expectation_suite_name_sort;
+  }
+
+  function validationSuccessFilterDataCollector(value, row, formattedValue) {
+    return row._validation_success_text;
+  }
+
+    function getFormattedDateWithoutTime  (d) {
+
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+  function formatRuntimeDateForFilter(text, value, field, data){
+    const cellValueAsDateObj = new Date(value);
+    return text == getFormattedDateWithoutTime(cellValueAsDateObj);
+  }
+
+  function clearTableFilters(tableId) {
+    $(`#${tableId}`).bootstrapTable('clearFilterControl');
+    $(`#${tableId}`).bootstrapTable('resetSearch');
+  }
+</script>
+
+<script>
+  $('#section-1-content-block-2-2-body-table').bootstrapTable(
+    Object.assign(
+      {
         columns: [{'field': 'expectation_suite_name', 'title': 'Expectation Suites', 'sortable': 'true'}],
         data: [{'expectation_suite_name': 'traffic_suite', '_table_row_link_path': 'expectations/traffic_suite.html'}],
-        toolbar: '#section-1-content-block-2-1-body-table-toolbar'
+        toolbar: '#section-1-content-block-2-2-body-table-toolbar'
       },
       {'search': 'true', 'trimOnSearch': 'false', 'visibleSearch': 'true', 'rowStyle': 'rowStyleLinks', 'rowAttributes': 'rowAttributesLinks', 'sortName': 'expectation_suite_name', 'sortOrder': 'asc', 'pagination': 'true', 'iconSize': 'sm', 'toolbarAlign': 'right'}
     )
@@ -841,7 +956,7 @@ img.dev-loop {
 
   
     $(document).ready(function() {
-      $("#section-1-content-block-2-1-body-table").on('click-row.bs.table', function(e, row, $element) {
+      $("#section-1-content-block-2-2-body-table").on('click-row.bs.table', function(e, row, $element) {
           window.location = $element.data("href");
         })
       }
