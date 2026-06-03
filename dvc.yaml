@@ -28,6 +28,3 @@ stages:
       cd gx && uv run python run_checkpoint.py
     deps:
       - data/preprocessed/
-    outs:
-      - gx:
-          persist: true

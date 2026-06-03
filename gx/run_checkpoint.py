@@ -20,7 +20,8 @@ checkpoint_result = checkpoint.run(
 )
 
 #build data docs
-context.build_data_docs()
+data_docs = context.build_data_docs()
+print(f"Data docs built at: {data_docs}")
 
 #check if checkpoint passed
 if checkpoint_result["success"]:
@@ -28,4 +29,5 @@ if checkpoint_result["success"]:
     sys.exit(0)
 else:
     print("Checkpoint failed!")
+
     sys.exit(1)

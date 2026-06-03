@@ -6,7 +6,7 @@
       "expectation_type": "expect_table_row_count_to_be_between",
       "kwargs": {
         "max_value": null,
-        "min_value": 4434
+        "min_value": null
       },
       "meta": {
         "profiler_details": {
@@ -267,7 +267,7 @@
       "expectation_type": "expect_column_value_lengths_to_be_between",
       "kwargs": {
         "column": "Lokacija",
-        "max_value": 300,
+        "max_value": 102,
         "min_value": 44,
         "mostly": 1.0,
         "strict_max": false,
@@ -508,28 +508,6 @@
       "kwargs": {
         "column": "\u0160t. vozil [N/h]",
         "max_value": null,
-        "min_value": 2,
-        "strict_max": false,
-        "strict_min": false
-      },
-      "meta": {
-        "profiler_details": {
-          "metric_configuration": {
-            "domain_kwargs": {
-              "column": "\u0160t. vozil [N/h]"
-            },
-            "metric_name": "column.distinct_values.count",
-            "metric_value_kwargs": null
-          },
-          "num_batches": 1
-        }
-      }
-    },
-    {
-      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
-      "kwargs": {
-        "column": "\u0160t. vozil [N/h]",
-        "max_value": null,
         "min_value": null,
         "strict_max": false,
         "strict_min": false
@@ -540,95 +518,7 @@
             "domain_kwargs": {
               "column": "\u0160t. vozil [N/h]"
             },
-            "metric_name": "column.unique_proportion",
-            "metric_value_kwargs": null
-          },
-          "num_batches": 1
-        }
-      }
-    },
-    {
-      "expectation_type": "expect_column_unique_value_count_to_be_between",
-      "kwargs": {
-        "column": "Zasedenost [%]",
-        "max_value": null,
-        "min_value": null,
-        "strict_max": false,
-        "strict_min": false
-      },
-      "meta": {
-        "profiler_details": {
-          "metric_configuration": {
-            "domain_kwargs": {
-              "column": "Zasedenost [%]"
-            },
             "metric_name": "column.distinct_values.count",
-            "metric_value_kwargs": null
-          },
-          "num_batches": 1
-        }
-      }
-    },
-    {
-      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
-      "kwargs": {
-        "column": "Zasedenost [%]",
-        "max_value": null,
-        "min_value": null,
-        "strict_max": false,
-        "strict_min": false
-      },
-      "meta": {
-        "profiler_details": {
-          "metric_configuration": {
-            "domain_kwargs": {
-              "column": "Zasedenost [%]"
-            },
-            "metric_name": "column.unique_proportion",
-            "metric_value_kwargs": null
-          },
-          "num_batches": 1
-        }
-      }
-    },
-    {
-      "expectation_type": "expect_column_unique_value_count_to_be_between",
-      "kwargs": {
-        "column": "\u010cas",
-        "max_value": null,
-        "min_value": null,
-        "strict_max": false,
-        "strict_min": false
-      },
-      "meta": {
-        "profiler_details": {
-          "metric_configuration": {
-            "domain_kwargs": {
-              "column": "\u010cas"
-            },
-            "metric_name": "column.distinct_values.count",
-            "metric_value_kwargs": null
-          },
-          "num_batches": 1
-        }
-      }
-    },
-    {
-      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
-      "kwargs": {
-        "column": "\u010cas",
-        "max_value": null,
-        "min_value": null,
-        "strict_max": false,
-        "strict_min": false
-      },
-      "meta": {
-        "profiler_details": {
-          "metric_configuration": {
-            "domain_kwargs": {
-              "column": "\u010cas"
-            },
-            "metric_name": "column.unique_proportion",
             "metric_value_kwargs": null
           },
           "num_batches": 1
@@ -666,8 +556,8 @@
       "expectation_type": "expect_column_unique_value_count_to_be_between",
       "kwargs": {
         "column": "Stanje",
-        "max_value": 7,
-        "min_value": 1,
+        "max_value": 5,
+        "min_value": 5,
         "strict_max": false,
         "strict_min": false
       },
@@ -683,35 +573,13 @@
           "num_batches": 1
         }
       }
-    },
-    {
-      "expectation_type": "expect_column_proportion_of_unique_values_to_be_between",
-      "kwargs": {
-        "column": "Stanje",
-        "max_value": null,
-        "min_value": null,
-        "strict_max": false,
-        "strict_min": false
-      },
-      "meta": {
-        "profiler_details": {
-          "metric_configuration": {
-            "domain_kwargs": {
-              "column": "Stanje"
-            },
-            "metric_name": "column.unique_proportion",
-            "metric_value_kwargs": null
-          },
-          "num_batches": 1
-        }
-      }
     }
   ],
   "ge_cloud_id": null,
   "meta": {
     "citations": [
       {
-        "citation_date": "2026-06-02T22:50:10.579268Z",
+        "citation_date": "2026-06-02T23:45:56.726874Z",
         "comment": "Created by effective Rule-Based Profiler of OnboardingDataAssistant with the configuration included.\n"
       }
     ],
