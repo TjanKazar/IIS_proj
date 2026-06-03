@@ -31,6 +31,8 @@ jobs:
 
       - name: Setup DVC
         uses: iterative/setup-dvc@v1
+        with:
+         version: "3.62.0"
 
       - name: Setup Git
         run: |
