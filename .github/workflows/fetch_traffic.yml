@@ -29,10 +29,9 @@ jobs:
           python -m pipx ensurepath || true
           pipx install uv || python -m pip install uv
 
-      - name: Setup DVC
-        uses: iterative/setup-dvc@v1
-        with:
-         version: "3.62.0"
+      - name: Install DVC
+        run: |
+          uv pip install --system "dvc[s3]"
 
       - name: Setup Git
         run: |
