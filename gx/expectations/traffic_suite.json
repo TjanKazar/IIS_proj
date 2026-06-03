@@ -532,10 +532,12 @@
         "mostly": 1.0,
         "value_set": [
           "Normalen promet",
+          "Gost promet",
+          "Pove\u010dan promet",
           "Gost promet z zastoji",
+          "Zgoščen promet",
           "Ni podatka",
-          "Ni prometa",
-          "Pove\u010dan promet"
+          "Ni prometa"
         ]
       },
       "meta": {
@@ -556,8 +558,8 @@
       "expectation_type": "expect_column_unique_value_count_to_be_between",
       "kwargs": {
         "column": "Stanje",
-        "max_value": 5,
-        "min_value": 5,
+        "max_value": 7,
+        "min_value": 1,
         "strict_max": false,
         "strict_min": false
       },
