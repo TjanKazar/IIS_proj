@@ -1,4 +1,4 @@
-name: Fetch data on schedule
+name: Traffic DVC Pipeline
 
 on:
   workflow_dispatch:
@@ -6,9 +6,8 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
-  fetch_air:
+  pipeline:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,17 +34,16 @@ jobs:
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
 
-      # Synchronize BEFORE running DVC
       - name: Sync with remote
         run: |
           git fetch origin main
           git rebase origin/main
 
-      - name: Install runtime deps
+      - name: Install dependencies
         run: |
           uv sync --frozen
 
-      - name: DVC setup remote
+      - name: Configure DVC remote
         env:
           DAGSHUB_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           DAGSHUB_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -53,21 +51,22 @@ jobs:
           dvc remote modify origin --local access_key_id "$DAGSHUB_ACCESS_KEY_ID"
           dvc remote modify origin --local secret_access_key "$DAGSHUB_SECRET_ACCESS_KEY"
 
-      - name: Run DVC pipeline
+      - name: Run full DVC pipeline
         run: |
           dvc pull || true
           dvc repro
           dvc push
 
-      - name: Commit lockfile changes
+      - name: Commit artifacts
         id: commit
         run: |
           git add dvc.lock
-
+          git add data/reference/
+          git add src/reports/
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            git commit -m "Update dvc.lock on $(date -u)"
+            git commit -m "Update pipeline artifacts on $(date -u)"
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -76,10 +75,23 @@ jobs:
         run: |
           git push origin HEAD:main
 
-      - name: Deploy DataDocs to Netlify
+      - name: Prepare Netlify site
+        run: |
+          mkdir -p site
+          cp -r gx/uncommitted/data_docs/local_site site/gx
+          if [ ! -f src/reports/data_testing_report.html ]; then
+            echo "ERROR: data_testing_report.html not found!"
+            ls -la src/reports/ || echo "src/reports/ directory missing entirely"
+            exit 1
+          fi
+          cp src/reports/data_testing_report.html site/index.html
+          echo "site/ contents:"
+          ls -la site/
+
+      - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.2
         with:
-          publish-dir: gx/uncommitted/data_docs/local_site
+          publish-dir: site
           production-deploy: true
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
