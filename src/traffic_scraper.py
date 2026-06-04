@@ -119,6 +119,11 @@ def fetch_traffic_data():
     df["Cesta"] = df["Cesta"].replace("", pd.NA)
     df["Cesta"] = df["Cesta"].ffill()
 
+    # same for location
+
+    df["Lokacija"] = df["Lokacija"].replace("", pd.NA)
+    df["Lokacija"] = df["Lokacija"].ffill()
+
     #
     # Drop completely empty rows
     #
