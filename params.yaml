@@ -5,3 +5,35 @@ fetch:
 preprocess:
   input: "data/traffic.csv"
   output: "data/preprocessed/traffic.csv"
+
+  random_state: 42
+
+  target_col: "Stanje"
+
+  timestamp_col: "Čas"
+
+  location_col: "Lokacija"
+  direction_col: "Smer"
+  road_col: "Cesta"
+
+  fill_missing_timestamps: true
+
+  create_time_diff: true
+  time_diff_unit: "minutes"
+
+  location_key_cols:
+    - "Lokacija"
+    - "Smer"
+
+  remove_location_leakage: true
+
+  create_time_features: true
+
+train:
+  random_state: 42
+
+  test_size: 0.2
+
+  use_time_split: true
+
+  model_type: "catboost"
