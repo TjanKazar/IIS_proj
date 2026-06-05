@@ -5,8 +5,8 @@ from evidently.presets.drift import DataDriftPreset
 from evidently.presets.dataset_stats import DataSummaryPreset
 import os
 
-current = pd.read_csv("../data/preprocessed/traffic.csv")
-reference_path = "../data/reference/traffic.csv"
+current = pd.read_csv("data/traffic.csv")
+reference_path = "data/reference/traffic.csv"
 
 if not os.path.exists(reference_path):
     print(f"Reference file not found. Copying from current data to {reference_path}.")
@@ -30,7 +30,7 @@ report = Report([
 result = report.run(reference_data=reference, current_data=current)
 
 # Save the report to an HTML file
-result.save_html("reports/data_testing_report.html")
+result.save_html("src/reports/data_testing_report.html")
 
 # Check if the report contains any tests and if all tests passed
 all_tests_passed = True
@@ -48,6 +48,6 @@ else:
     print("Data tests passed.")
     # Replace the reference data with the current data
     os.remove(reference_path)
-current = pd.read_csv("../data/preprocessed/traffic.csv")
-current.to_csv(reference_path, index=False)
+    current = pd.read_csv("data/traffic.csv")
+    current.to_csv(reference_path, index=False)
 sys.exit(0)
