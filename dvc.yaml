@@ -43,9 +43,6 @@ stages:
           persist: true
 
   train:
-    env: 
-        MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-        MLFLOW_TRACKING_PASSWORD: ${{ secrets.PAT_TOKEN }}
     cmd: |
       uv run python src/model/preprocess.py
       git commit -am "Updated model on `date` with DVC pipeline and GitHub workflows" || true

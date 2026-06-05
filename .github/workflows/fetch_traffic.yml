@@ -52,6 +52,9 @@ jobs:
           dvc remote modify origin --local secret_access_key "$DAGSHUB_SECRET_ACCESS_KEY"
 
       - name: Run full DVC pipeline
+        env:
+          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.PAT_TOKEN }} #
         run: |
           dvc pull || true
           dvc repro
