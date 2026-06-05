@@ -53,8 +53,9 @@ jobs:
 
       - name: Run full DVC pipeline
         env:
+          MLFLOW_TRACKING_URI: https://dagshub.com/TjanKazar/IIS_proj.mlflow
           MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.PAT_TOKEN }} #
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
         run: |
           dvc pull || true
           dvc repro
