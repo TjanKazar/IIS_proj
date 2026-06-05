@@ -39,7 +39,7 @@ stages:
       - data/preprocessed/traffic.csv
       - src/data_test.py
     outs:
-      - data/reference/traffic:
+      - data/reference/traffic.csv:
           persist: true
 
   train:
