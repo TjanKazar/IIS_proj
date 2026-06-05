@@ -28,3 +28,36 @@ stages:
       cd gx && uv run python run_checkpoint.py
     deps:
       - data/preprocessed/
+    outs:
+      - gx/uncommitted:
+          persist: true
+
+  test_data:
+    cmd: |
+      uv run python src/data/test_data.py
+    deps:
+      - data/preprocessed/traffic.csv
+      - src/data/test_data.py
+    outs:
+      - data/reference/traffic:
+          persist: true
+
+  train:
+    cmd: |
+      uv run python src/model/preprocess.py
+      git commit -am "Updated model on `date` with DVC pipeline and GitHub workflows" || true
+      git push || true
+      dvc push || true
+    deps:
+      - src/model/preprocess.py
+      - data/preprocessed/traffic.csv
+      - gx/uncommitted
+      - data/reference/traffic
+    params:
+      - train.random_state
+      - train.test_size
+      - train.use_time_split
+      - train.model_type
+    outs:
+      - models/:
+          persist: true

@@ -302,10 +302,8 @@ class NoDataFilter(BaseEstimator, TransformerMixin):
         self.no_data_df_ = X[mask].copy()
         return X[~mask].copy()
 
-
-# ==============================================================================
 # Run: preprocess + train
-# ==============================================================================
+
 if __name__ == "__main__":
 
     # ── Preprocessing ──────────────────────────────────────────────────────────
@@ -331,8 +329,6 @@ if __name__ == "__main__":
               f"({100 * n_removed / (len(df) + n_removed):.1f}% of total)")
         no_data_path = os.path.join(project_root, NO_DATA_OUTPUT)
         os.makedirs(os.path.dirname(no_data_path), exist_ok=True)
-        no_data_filter.no_data_df_.to_csv(no_data_path, index=False)
-        print(f"[preprocess] No-data saved to : {no_data_path}")
 
     # Step 4: Label-encode target BEFORE lag features
     target_enc = TargetEncoder(target_col=TARGET_COL)

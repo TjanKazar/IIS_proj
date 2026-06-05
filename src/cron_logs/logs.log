@@ -125,3 +125,511 @@ Preprocessed 27268 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/d
   tables = pd.read_html(
 1410 new rows added (112 duplicates skipped)
 Preprocessed 28678 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+Traceback (most recent call last):
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/util/connection.py", line 60, in create_connection
+    for res in socket.getaddrinfo(host, port, family, socket.SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 963, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -2] Name or service not known
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 500, in request
+    self.endheaders()
+  File "/usr/lib/python3.12/http/client.py", line 1351, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1111, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1055, in send
+    self.connect()
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/connection.py", line 211, in _new_conn
+    raise NameResolutionError(self.host, self, e) from e
+urllib3.exceptions.NameResolutionError: HTTPConnection(host='portal.drsc.si', port=80): Failed to resolve 'portal.drsc.si' ([Errno -2] Name or service not known)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/requests/adapters.py", line 696, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/connectionpool.py", line 842, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/urllib3/util/retry.py", line 543, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='portal.drsc.si', port=80): Max retries exceeded with url: /traffic/loclist_si.htm (Caused by NameResolutionError("HTTPConnection(host='portal.drsc.si', port=80): Failed to resolve 'portal.drsc.si' ([Errno -2] Name or service not known)"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py", line 187, in <module>
+    fetch_traffic_data()
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py", line 70, in fetch_traffic_data
+    response = requests.get(
+               ^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/requests/api.py", line 87, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/requests/api.py", line 71, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/requests/sessions.py", line 784, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/.venv/lib/python3.12/site-packages/requests/adapters.py", line 729, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='portal.drsc.si', port=80): Max retries exceeded with url: /traffic/loclist_si.htm (Caused by NameResolutionError("HTTPConnection(host='portal.drsc.si', port=80): Failed to resolve 'portal.drsc.si' ([Errno -2] Name or service not known)"))
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1491 new rows added (30 duplicates skipped)
+Preprocessed 30169 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1384 new rows added (137 duplicates skipped)
+Preprocessed 31553 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1426 new rows added (96 duplicates skipped)
+Preprocessed 32979 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1424 new rows added (98 duplicates skipped)
+Preprocessed 34403 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1404 new rows added (116 duplicates skipped)
+Preprocessed 35807 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1402 new rows added (120 duplicates skipped)
+Preprocessed 37209 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1436 new rows added (86 duplicates skipped)
+Preprocessed 38645 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1405 new rows added (116 duplicates skipped)
+Preprocessed 40050 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1420 new rows added (102 duplicates skipped)
+Preprocessed 41470 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1029 new rows added (493 duplicates skipped)
+Preprocessed 42499 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1457 new rows added (64 duplicates skipped)
+Preprocessed 43956 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1414 new rows added (108 duplicates skipped)
+Preprocessed 45370 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1422 new rows added (99 duplicates skipped)
+Preprocessed 46792 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1386 new rows added (135 duplicates skipped)
+Preprocessed 48178 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1431 new rows added (90 duplicates skipped)
+Preprocessed 49609 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1401 new rows added (119 duplicates skipped)
+Preprocessed 51010 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1442 new rows added (80 duplicates skipped)
+Preprocessed 52452 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1458 new rows added (64 duplicates skipped)
+Preprocessed 53910 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1411 new rows added (111 duplicates skipped)
+Preprocessed 55321 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1446 new rows added (76 duplicates skipped)
+Preprocessed 56767 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1430 new rows added (90 duplicates skipped)
+Preprocessed 58197 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1397 new rows added (124 duplicates skipped)
+Preprocessed 59594 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1446 new rows added (76 duplicates skipped)
+Preprocessed 61040 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1454 new rows added (68 duplicates skipped)
+Preprocessed 62494 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1442 new rows added (80 duplicates skipped)
+Preprocessed 63936 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1456 new rows added (64 duplicates skipped)
+Preprocessed 65392 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1424 new rows added (98 duplicates skipped)
+Preprocessed 66816 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1474 new rows added (46 duplicates skipped)
+Preprocessed 68290 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1396 new rows added (126 duplicates skipped)
+Preprocessed 69686 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1429 new rows added (93 duplicates skipped)
+Preprocessed 71115 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1451 new rows added (70 duplicates skipped)
+Preprocessed 72566 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1423 new rows added (97 duplicates skipped)
+Preprocessed 73989 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1479 new rows added (42 duplicates skipped)
+Preprocessed 75468 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1071 new rows added (450 duplicates skipped)
+Preprocessed 76539 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1474 new rows added (48 duplicates skipped)
+Preprocessed 78013 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1399 new rows added (122 duplicates skipped)
+Preprocessed 79412 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1413 new rows added (108 duplicates skipped)
+Preprocessed 80825 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1409 new rows added (112 duplicates skipped)
+Preprocessed 82234 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1426 new rows added (95 duplicates skipped)
+Preprocessed 83660 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1399 new rows added (122 duplicates skipped)
+Preprocessed 85059 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1415 new rows added (106 duplicates skipped)
+Preprocessed 86474 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1413 new rows added (108 duplicates skipped)
+Preprocessed 87887 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1438 new rows added (84 duplicates skipped)
+Preprocessed 89325 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1422 new rows added (100 duplicates skipped)
+Preprocessed 90747 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1383 new rows added (138 duplicates skipped)
+Preprocessed 92130 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1414 new rows added (108 duplicates skipped)
+Preprocessed 93544 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1426 new rows added (96 duplicates skipped)
+Preprocessed 94970 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1423 new rows added (99 duplicates skipped)
+Preprocessed 96393 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1456 new rows added (66 duplicates skipped)
+Preprocessed 97849 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1428 new rows added (94 duplicates skipped)
+Preprocessed 99277 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1400 new rows added (122 duplicates skipped)
+Preprocessed 100677 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1392 new rows added (130 duplicates skipped)
+Preprocessed 102069 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1424 new rows added (98 duplicates skipped)
+Preprocessed 103493 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1412 new rows added (110 duplicates skipped)
+Preprocessed 104905 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1399 new rows added (123 duplicates skipped)
+Preprocessed 106304 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1407 new rows added (114 duplicates skipped)
+Preprocessed 107711 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1427 new rows added (95 duplicates skipped)
+Preprocessed 109138 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1396 new rows added (126 duplicates skipped)
+Preprocessed 110534 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1438 new rows added (84 duplicates skipped)
+Preprocessed 111972 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1420 new rows added (102 duplicates skipped)
+Preprocessed 113392 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1434 new rows added (88 duplicates skipped)
+Preprocessed 114826 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1424 new rows added (98 duplicates skipped)
+Preprocessed 116250 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1440 new rows added (82 duplicates skipped)
+Preprocessed 117690 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1420 new rows added (102 duplicates skipped)
+Preprocessed 119110 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1410 new rows added (112 duplicates skipped)
+Preprocessed 120520 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1434 new rows added (88 duplicates skipped)
+Preprocessed 121954 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1398 new rows added (124 duplicates skipped)
+Preprocessed 123352 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1394 new rows added (128 duplicates skipped)
+Preprocessed 124746 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1371 new rows added (151 duplicates skipped)
+Preprocessed 126117 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1442 new rows added (80 duplicates skipped)
+Preprocessed 127559 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1418 new rows added (104 duplicates skipped)
+Preprocessed 128977 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1398 new rows added (124 duplicates skipped)
+Preprocessed 130375 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1414 new rows added (108 duplicates skipped)
+Preprocessed 131789 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1416 new rows added (106 duplicates skipped)
+Preprocessed 133205 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1423 new rows added (99 duplicates skipped)
+Preprocessed 134628 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1408 new rows added (114 duplicates skipped)
+Preprocessed 136036 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1393 new rows added (129 duplicates skipped)
+Preprocessed 137429 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1390 new rows added (132 duplicates skipped)
+Preprocessed 138819 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1409 new rows added (113 duplicates skipped)
+Preprocessed 140228 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1400 new rows added (122 duplicates skipped)
+Preprocessed 141628 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1406 new rows added (116 duplicates skipped)
+Preprocessed 143034 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1384 new rows added (138 duplicates skipped)
+Preprocessed 144418 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1412 new rows added (110 duplicates skipped)
+Preprocessed 145830 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1408 new rows added (114 duplicates skipped)
+Preprocessed 147238 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1411 new rows added (111 duplicates skipped)
+Preprocessed 148649 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1428 new rows added (94 duplicates skipped)
+Preprocessed 150077 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1408 new rows added (114 duplicates skipped)
+Preprocessed 151485 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1404 new rows added (118 duplicates skipped)
+Preprocessed 152889 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1403 new rows added (119 duplicates skipped)
+Preprocessed 154292 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1394 new rows added (128 duplicates skipped)
+Preprocessed 155686 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1400 new rows added (122 duplicates skipped)
+Preprocessed 157086 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1418 new rows added (104 duplicates skipped)
+Preprocessed 158504 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1412 new rows added (110 duplicates skipped)
+Preprocessed 159916 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1420 new rows added (102 duplicates skipped)
+Preprocessed 161336 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1408 new rows added (114 duplicates skipped)
+Preprocessed 162744 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1399 new rows added (123 duplicates skipped)
+Preprocessed 164143 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1408 new rows added (114 duplicates skipped)
+Preprocessed 165551 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1412 new rows added (110 duplicates skipped)
+Preprocessed 166963 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1370 new rows added (152 duplicates skipped)
+Preprocessed 168333 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1399 new rows added (123 duplicates skipped)
+Preprocessed 169732 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1403 new rows added (119 duplicates skipped)
+Preprocessed 171135 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1362 new rows added (160 duplicates skipped)
+Preprocessed 172497 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1411 new rows added (111 duplicates skipped)
+Preprocessed 173908 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1436 new rows added (86 duplicates skipped)
+Preprocessed 175344 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1458 new rows added (64 duplicates skipped)
+Preprocessed 176802 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1422 new rows added (100 duplicates skipped)
+Preprocessed 178224 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1392 new rows added (130 duplicates skipped)
+Preprocessed 179616 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1394 new rows added (128 duplicates skipped)
+Preprocessed 181010 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
+/home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/src/traffic_scraper.py:90: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  tables = pd.read_html(
+1386 new rows added (136 duplicates skipped)
+Preprocessed 182396 rows → /home/tjan-kazar/storage/Faks/mag2/IIS/Projekt/iis/data/preprocessed/traffic.csv
