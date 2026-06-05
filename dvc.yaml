@@ -34,10 +34,10 @@ stages:
 
   test_data:
     cmd: |
-      uv run python src/data/data_test.py
+      uv run python src/data_test.py
     deps:
       - data/preprocessed/traffic.csv
-      - src/data/data_test.py
+      - src/data_test.py
     outs:
       - data/reference/traffic:
           persist: true
