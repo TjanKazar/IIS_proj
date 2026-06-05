@@ -52,7 +52,7 @@ stages:
       - src/model/preprocess.py
       - data/preprocessed/traffic.csv
       - gx/uncommitted
-      - data/reference/traffic
+      - data/reference/traffic.csv
     params:
       - train.random_state
       - train.test_size
