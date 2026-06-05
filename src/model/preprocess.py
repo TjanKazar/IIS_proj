@@ -12,13 +12,11 @@ from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
 import dagshub
 
-dagshub.init(repo_owner="TjanKazar", repo_name="IIS_proj", mlflow=True)
 
 # -- Load params from project root ---------------------------------------------
 script_dir   = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, "../.."))
 params_path  = os.path.join(project_root, "params.yaml")
-
 all_params   = yaml.safe_load(open(params_path))
 params       = all_params["preprocess"]
 train_params = all_params["train"]
