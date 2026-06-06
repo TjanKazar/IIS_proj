@@ -47,7 +47,7 @@ stages:
       uv run python src/model/preprocess.py
       git commit -am "Updated model on `date` with DVC pipeline and GitHub workflows" || true
       git push || true
-      dvc push || true
+      uv run dvc push || true
     deps:
       - src/model/preprocess.py
       - data/preprocessed/traffic.csv
