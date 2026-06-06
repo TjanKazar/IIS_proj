@@ -27,6 +27,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from chronos_utils import (
     _predict,
     evaluate_chronos_mae,
+    forecast_all_metrics,
     load_chronos_pipeline,
     prepare_chronos_context,
     run_chronos_forecast,
@@ -436,13 +437,14 @@ if __name__ == "__main__":
         print(f"[train] Scaler saved    : {scaler_path}")
         print(f"[train] Features saved  : {features_path}")
 
-    # ── Chronos 30-min forecast ────────────────────────────────────────────────
+    # ── Chronos 30-min forecast (ALL METRICS) ─────────────────────────────────
     if RUN_CHRONOS:
         print("\n" + "=" * 70)
-        print("[chronos] Starting 30-minute-ahead forecast of St. vozil [N/h]")
+        print("[chronos] Starting 30-minute-ahead forecast of all traffic metrics")
         print(f"[chronos] Model          : {CHRONOS_MODEL_ID}")
         print(f"[chronos] Context length : {CHRONOS_CONTEXT_LEN} readings")
         print(f"[chronos] Predict steps  : {CHRONOS_PRED_LEN}  (= 30 min ahead)")
+        print(f"[chronos] Metrics        : {CHRONOS_TARGET_COLS}")
         print(f"[chronos] Location       : {CHRONOS_FORECAST_LOCATION}")
         print("=" * 70)
 
@@ -475,8 +477,8 @@ if __name__ == "__main__":
 
         print(f"[chronos] Rows for this location : {len(loc_df)}")
 
-        # MAE evaluation
-        print("\n[chronos] Evaluating MAE...")
+        # MAE evaluation for ALL metrics
+        print("\n[chronos] Evaluating MAE for all metrics...")
         chronos_mae = evaluate_chronos_mae(
             raw_df              = loc_df,
             location_key_cols   = LOCATION_KEY_COLS,
@@ -490,25 +492,49 @@ if __name__ == "__main__":
         for col, mae_val in chronos_mae.items():
             print(f"  {col:30s}: MAE = {mae_val:.4f}")
 
-        # Forecast: last context_len readings → next 30 min
-        series     = loc_df[CHRONOS_TARGET_COLS[0]].dropna().values[-CHRONOS_CONTEXT_LEN:]
-        ctx_tensor = torch.tensor(series, dtype=torch.float32)
-
-        print(f"\n[chronos] Context (last {CHRONOS_CONTEXT_LEN} readings of {CHRONOS_TARGET_COLS[0]}):")
-        print(f"  {series.tolist()}")
-
-        forecast_mean, forecast_q10, forecast_q90 = _predict(
-            chronos_pipeline, ctx_tensor, CHRONOS_PRED_LEN
+        # Forecast ALL metrics
+        print(f"\n[chronos] Forecasting all metrics for next {CHRONOS_PRED_LEN} steps (each = 5 min)...")
+        forecasts = forecast_all_metrics(
+            pipeline=chronos_pipeline,
+            location_df=loc_df,
+            target_columns=CHRONOS_TARGET_COLS,
+            context_len=CHRONOS_CONTEXT_LEN,
+            prediction_len=CHRONOS_PRED_LEN
         )
 
-        print(f"\n[chronos] Forecast for next {CHRONOS_PRED_LEN} steps (each = 5 min):")
-        for i, (m, lo, hi) in enumerate(zip(forecast_mean, forecast_q10, forecast_q90), 1):
-            print(f"  t+{i*5:2d} min : {m:.1f}  [q10={lo:.1f}, q90={hi:.1f}]  vehicles/h")
+        # Display forecasts
+        for col_name, (mean_fc, q10_fc, q90_fc) in forecasts.items():
+            print(f"\n[chronos] {col_name}:")
+            for i, (m, lo, hi) in enumerate(zip(mean_fc, q10_fc, q90_fc), 1):
+                if col_name == "St. vozil [N/h]":
+                    unit = "vehicles/h"
+                elif col_name == "Hitrost [km/h]":
+                    unit = "km/h"
+                elif col_name == "Razmik [s]":
+                    unit = "sec"
+                elif col_name == "Zasedenost [%]":
+                    unit = "%"
+                else:
+                    unit = ""
+                print(f"  t+{i*5:2d} min : {m:.1f} {unit}  [q10={lo:.1f}, q90={hi:.1f}]")
 
-        predicted_volume_30min = float(forecast_mean[-1])
-        print(f"\n[chronos] Predicted St. vozil at t+30min : {predicted_volume_30min:.1f}")
+        # Get the 30-minute forecast values (last prediction step)
+        predicted_volume_30min = forecasts[COL_VOLUME][0][-1] if COL_VOLUME in forecasts else None
+        predicted_speed_30min = forecasts[COL_SPEED][0][-1] if COL_SPEED in forecasts else None
+        predicted_headway_30min = forecasts[COL_HEADWAY][0][-1] if COL_HEADWAY in forecasts else None
+        predicted_occupancy_30min = forecasts[COL_OCCUPANCY][0][-1] if COL_OCCUPANCY in forecasts else None
 
-        # Feed the 30-min-ahead volume into the MLP to get Stanje
+        print(f"\n[chronos] 30-minute forecast values:")
+        if predicted_volume_30min:
+            print(f"  St. vozil [N/h]   : {predicted_volume_30min:.1f} vehicles/h")
+        if predicted_speed_30min:
+            print(f"  Hitrost [km/h]    : {predicted_speed_30min:.1f} km/h")
+        if predicted_headway_30min:
+            print(f"  Razmik [s]        : {predicted_headway_30min:.1f} sec")
+        if predicted_occupancy_30min:
+            print(f"  Zasedenost [%]    : {predicted_occupancy_30min:.1f} %")
+
+        # Feed ALL forecasted metrics into the MLP to get Stanje
         last_row   = loc_df.iloc[-1].copy()
         last_ts    = last_row[TIMESTAMP_COL]
         mlp_loc_df = df[df.index.isin(loc_df.index)]
@@ -519,10 +545,38 @@ if __name__ == "__main__":
         else:
             mlp_row = mlp_loc_df.iloc[-1][feature_cols].values.astype(np.float32).copy()
 
-            if COL_VOLUME in feature_cols:
-                vol_idx          = feature_cols.index(COL_VOLUME)
+            # Patch ALL forecasted metrics into the feature vector
+            patched_features = []
+            if COL_VOLUME in feature_cols and predicted_volume_30min is not None:
+                vol_idx = feature_cols.index(COL_VOLUME)
                 mlp_row[vol_idx] = predicted_volume_30min
-                print(f"[chronos→MLP] Patched feature '{COL_VOLUME}' = {predicted_volume_30min:.1f}")
+                patched_features.append(COL_VOLUME)
+                
+            if COL_SPEED in feature_cols and predicted_speed_30min is not None:
+                speed_idx = feature_cols.index(COL_SPEED)
+                mlp_row[speed_idx] = predicted_speed_30min
+                patched_features.append(COL_SPEED)
+                
+            if COL_HEADWAY in feature_cols and predicted_headway_30min is not None:
+                headway_idx = feature_cols.index(COL_HEADWAY)
+                mlp_row[headway_idx] = predicted_headway_30min
+                patched_features.append(COL_HEADWAY)
+                
+            if COL_OCCUPANCY in feature_cols and predicted_occupancy_30min is not None:
+                occupancy_idx = feature_cols.index(COL_OCCUPANCY)
+                mlp_row[occupancy_idx] = predicted_occupancy_30min
+                patched_features.append(COL_OCCUPANCY)
+            
+            print(f"[chronos→MLP] Patched features: {patched_features}")
+            print(f"[chronos→MLP] Updated values:")
+            if predicted_volume_30min:
+                print(f"  {COL_VOLUME:25s}: {predicted_volume_30min:.1f}")
+            if predicted_speed_30min:
+                print(f"  {COL_SPEED:25s}: {predicted_speed_30min:.1f}")
+            if predicted_headway_30min:
+                print(f"  {COL_HEADWAY:25s}: {predicted_headway_30min:.1f}")
+            if predicted_occupancy_30min:
+                print(f"  {COL_OCCUPANCY:25s}: {predicted_occupancy_30min:.1f}")
 
             mlp_row_scaled = scaler.transform(mlp_row.reshape(1, -1))
             mlp_input      = torch.tensor(mlp_row_scaled, dtype=torch.float32).to(DEVICE)
@@ -540,18 +594,37 @@ if __name__ == "__main__":
             for cls_idx, cls_name in sorted(target_enc.class_map_.items()):
                 print(f"  {cls_name:20s}: {probs[cls_idx]:.3f}")
 
-            # Save result
+            # Save detailed results
             forecast_path = os.path.join(project_root, "models", "chronos_30min_forecast.csv")
-            result_df = pd.DataFrame([{
-                "location":               str(loc_key),
-                "context_end_timestamp":  str(last_ts),
-                "predicted_volume_30min": predicted_volume_30min,
-                "predicted_stanje":       predicted_stanje,
-                **{f"prob_{target_enc.class_map_[i]}": float(probs[i])
-                   for i in sorted(target_enc.class_map_)},
-                **{f"volume_t+{(i+1)*5}min": float(forecast_mean[i])
-                   for i in range(CHRONOS_PRED_LEN)},
-            }])
+            
+            # Build results dictionary
+            result_dict = {
+                "location": str(loc_key),
+                "context_end_timestamp": str(last_ts),
+                "predicted_stanje": predicted_stanje,
+            }
+            
+            # Add all forecast metrics
+            if predicted_volume_30min is not None:
+                result_dict["predicted_volume_30min_vehicles_per_h"] = predicted_volume_30min
+            if predicted_speed_30min is not None:
+                result_dict["predicted_speed_30min_km_per_h"] = predicted_speed_30min
+            if predicted_headway_30min is not None:
+                result_dict["predicted_headway_30min_sec"] = predicted_headway_30min
+            if predicted_occupancy_30min is not None:
+                result_dict["predicted_occupancy_30min_percent"] = predicted_occupancy_30min
+            
+            # Add probabilities
+            for i in sorted(target_enc.class_map_):
+                result_dict[f"prob_{target_enc.class_map_[i].replace(' ', '_')}"] = float(probs[i])
+            
+            # Add full forecast trajectories
+            for col_name, (mean_fc, _, _) in forecasts.items():
+                safe_name = col_name.replace(" ", "_").replace("[", "").replace("]", "").replace("/", "_")
+                for i in range(CHRONOS_PRED_LEN):
+                    result_dict[f"{safe_name}_t+{(i+1)*5}min"] = float(mean_fc[i])
+            
+            result_df = pd.DataFrame([result_dict])
             result_df.to_csv(forecast_path, index=False)
             print(f"\n[chronos] Result saved to : {forecast_path}")
 

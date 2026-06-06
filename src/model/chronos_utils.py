@@ -22,6 +22,7 @@ dtype=torch.bfloat16 cuts VRAM roughly in half vs float32.
 """
 
 import random
+from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
@@ -164,6 +165,48 @@ def run_chronos_forecast(
                 })
 
     return pd.DataFrame(rows)
+
+
+def forecast_all_metrics(
+    pipeline,
+    location_df: pd.DataFrame,
+    target_columns: list,
+    context_len: int,
+    prediction_len: int,
+) -> Dict[str, Tuple[np.ndarray, np.ndarray, np.ndarray]]:
+    """
+    Forecast all specified metrics for a single location.
+    
+    Args:
+        pipeline: Loaded Chronos pipeline
+        location_df: DataFrame filtered to a single location, sorted by timestamp
+        target_columns: List of column names to forecast
+        context_len: Number of historical readings to use as context
+        prediction_len: Number of future steps to predict
+    
+    Returns:
+        Dictionary mapping column name to tuple (mean, q10, q90) numpy arrays
+        each of shape (prediction_len,)
+    """
+    forecasts = {}
+    
+    for col in target_columns:
+        if col not in location_df.columns:
+            print(f"[chronos] Warning: Column '{col}' not found in data, skipping")
+            continue
+            
+        series = location_df[col].dropna().values[-context_len:]
+        
+        if len(series) < context_len:
+            print(f"[chronos] Warning: Not enough history for column '{col}' "
+                  f"(need {context_len}, got {len(series)})")
+            continue
+            
+        ctx_tensor = torch.tensor(series, dtype=torch.float32)
+        mean_fc, q10_fc, q90_fc = _predict(pipeline, ctx_tensor, prediction_len)
+        forecasts[col] = (mean_fc, q10_fc, q90_fc)
+    
+    return forecasts
 
 
 # ── MAE evaluation ────────────────────────────────────────────────────────────

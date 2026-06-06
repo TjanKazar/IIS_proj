@@ -1,0 +1,8 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+torch==2.5.1
+numpy==1.26.4
+pandas==2.2.3
+scikit-learn==1.6.0
+joblib==1.4.2
+chronos-forecasting==2.2.2
