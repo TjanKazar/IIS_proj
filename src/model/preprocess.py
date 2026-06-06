@@ -25,6 +25,7 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
 from chronos_utils import (
+    _predict,
     evaluate_chronos_mae,
     load_chronos_pipeline,
     prepare_chronos_context,
@@ -428,7 +429,7 @@ if __name__ == "__main__":
 
         for path in [model_path, encoder_path, scaler_path, features_path, output_path]:
             mlflow.log_artifact(path)
-        mlflow.pytorch.log_model(model, artifact_path="mlp_model")
+        mlflow.pytorch.log_model(model, name="mlp_model")
 
         print(f"\n[train] Model saved     : {model_path}")
         print(f"[train] Encoder saved   : {encoder_path}")
@@ -496,11 +497,9 @@ if __name__ == "__main__":
         print(f"\n[chronos] Context (last {CHRONOS_CONTEXT_LEN} readings of {CHRONOS_TARGET_COLS[0]}):")
         print(f"  {series.tolist()}")
 
-        forecast      = chronos_pipeline.predict(ctx_tensor, CHRONOS_PRED_LEN, num_samples=20)
-        forecast_np   = forecast.squeeze(0).numpy()
-        forecast_mean = forecast_np.mean(axis=0)
-        forecast_q10  = np.percentile(forecast_np, 10, axis=0)
-        forecast_q90  = np.percentile(forecast_np, 90, axis=0)
+        forecast_mean, forecast_q10, forecast_q90 = _predict(
+            chronos_pipeline, ctx_tensor, CHRONOS_PRED_LEN
+        )
 
         print(f"\n[chronos] Forecast for next {CHRONOS_PRED_LEN} steps (each = 5 min):")
         for i, (m, lo, hi) in enumerate(zip(forecast_mean, forecast_q10, forecast_q90), 1):
