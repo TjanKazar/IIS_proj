@@ -5,12 +5,13 @@ import joblib
 import numpy as np
 import pandas as pd
 import mlflow
-import mlflow.sklearn
+import mlflow.pytorch
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import classification_report, accuracy_score
-from sklearn.preprocessing import LabelEncoder
-from xgboost import XGBClassifier
-import dagshub
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
 
 
 # -- Load params from project root ---------------------------------------------
@@ -41,26 +42,33 @@ NO_DATA_OUTPUT     = params["no_data_output"]
 TEST_SIZE          = train_params["test_size"]
 USE_TIME_SPLIT     = train_params["use_time_split"]
 
-# XGBoost hyperparams — read from params.yaml if present, else use defaults
-xgb_params = train_params.get("xgboost", {})
-N_ESTIMATORS      = xgb_params.get("n_estimators", 500)
-MAX_DEPTH         = xgb_params.get("max_depth", 6)
-LEARNING_RATE     = xgb_params.get("learning_rate", 0.05)
-SUBSAMPLE         = xgb_params.get("subsample", 0.8)
-COLSAMPLE_BYTREE  = xgb_params.get("colsample_bytree", 0.8)
-EARLY_STOPPING    = xgb_params.get("early_stopping_rounds", 20)
+# MLP hyperparams — read from params.yaml under train.mlp, else use defaults
+mlp_params = train_params.get("mlp", {})
+HIDDEN_DIMS     = mlp_params.get("hidden_dims",     [256, 128, 64])  # layer widths
+DROPOUT_RATE    = mlp_params.get("dropout_rate",    0.3)
+BATCH_NORM      = mlp_params.get("batch_norm",      True)
+LEARNING_RATE   = mlp_params.get("learning_rate",   1e-3)
+WEIGHT_DECAY    = mlp_params.get("weight_decay",    1e-4)  # L2 regularisation
+BATCH_SIZE      = mlp_params.get("batch_size",      512)
+MAX_EPOCHS      = mlp_params.get("max_epochs",      100)
+PATIENCE        = mlp_params.get("patience",        10)    # early stopping
 
-# MLflow tracking URI — override in params.yaml under train.mlflow_tracking_uri
 MLFLOW_TRACKING_URI = train_params.get(
     "mlflow_tracking_uri",
-    "https://dagshub.com/TjanKazar/IIS_proj.mlflow"   # replace with your URI
+    "https://dagshub.com/TjanKazar/IIS_proj.mlflow"
 )
-MLFLOW_EXPERIMENT   = train_params.get("mlflow_experiment", "traffic_xgboost_train")
+MLFLOW_EXPERIMENT = train_params.get("mlflow_experiment", "traffic_mlp_train")
 
 # -- Reproducibility -----------------------------------------------------------
 os.environ["PYTHONHASHSEED"] = str(RANDOM_STATE)
 random.seed(RANDOM_STATE)
 np.random.seed(RANDOM_STATE)
+torch.manual_seed(RANDOM_STATE)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(RANDOM_STATE)
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"[train] Using device: {DEVICE}")
 
 # -- Column name constants -----------------------------------------------------
 COL_VOLUME    = "St. vozil [N/h]"
@@ -231,6 +239,88 @@ class NoDataFilter(BaseEstimator, TransformerMixin):
 
 
 # ==============================================================================
+# MLP Model Definition
+# ==============================================================================
+
+class TrafficMLP(nn.Module):
+    """
+    Feedforward MLP for traffic state classification.
+
+    Regularisation strategy:
+      - BatchNorm before each activation  → stabilises training, acts as mild regulariser
+      - Dropout after each activation     → primary regulariser, combats overfitting
+      - Weight decay (L2) on optimiser    → penalises large weights globally
+
+    The time-delta feature (minutes_since_last_reading) is treated as a regular
+    input — no special handling needed since MLP makes no temporal assumptions.
+    """
+
+    def __init__(self, input_dim: int, hidden_dims: list, num_classes: int,
+                 dropout_rate: float = 0.3, batch_norm: bool = True):
+        super().__init__()
+
+        layers = []
+        in_dim = input_dim
+
+        for hidden_dim in hidden_dims:
+            layers.append(nn.Linear(in_dim, hidden_dim))
+            if batch_norm:
+                layers.append(nn.BatchNorm1d(hidden_dim))
+            layers.append(nn.ReLU())
+            layers.append(nn.Dropout(p=dropout_rate))
+            in_dim = hidden_dim
+
+        layers.append(nn.Linear(in_dim, num_classes))  # logits out, no softmax (CrossEntropyLoss handles it)
+
+        self.net = nn.Sequential(*layers)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.net(x)
+
+
+# ==============================================================================
+# Training helpers
+# ==============================================================================
+
+def make_loaders(X_train, y_train, X_test, y_test, batch_size: int):
+    """Wrap numpy arrays in PyTorch DataLoaders."""
+    X_tr = torch.tensor(X_train, dtype=torch.float32)
+    y_tr = torch.tensor(y_train, dtype=torch.long)
+    X_te = torch.tensor(X_test,  dtype=torch.float32)
+    y_te = torch.tensor(y_test,  dtype=torch.long)
+
+    train_loader = DataLoader(TensorDataset(X_tr, y_tr), batch_size=batch_size, shuffle=True)
+    test_loader  = DataLoader(TensorDataset(X_te, y_te), batch_size=batch_size, shuffle=False)
+    return train_loader, test_loader
+
+
+def run_epoch(model, loader, criterion, optimizer=None):
+    """Run one epoch; if optimizer is None, runs in eval mode."""
+    training = optimizer is not None
+    model.train() if training else model.eval()
+
+    total_loss, total_correct, total_samples = 0.0, 0, 0
+
+    ctx = torch.enable_grad() if training else torch.no_grad()
+    with ctx:
+        for X_batch, y_batch in loader:
+            X_batch, y_batch = X_batch.to(DEVICE), y_batch.to(DEVICE)
+            logits = model(X_batch)
+            loss   = criterion(logits, y_batch)
+
+            if training:
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            total_loss    += loss.item() * len(y_batch)
+            total_correct += (logits.argmax(dim=1) == y_batch).sum().item()
+            total_samples += len(y_batch)
+
+    return total_loss / total_samples, total_correct / total_samples
+
+
+# ==============================================================================
 # Main: preprocess + train with MLflow tracking
 # ==============================================================================
 
@@ -299,8 +389,8 @@ if __name__ == "__main__":
 
     TARGET_ENC_COL = f"{TARGET_COL}_encoded"
     feature_cols   = [c for c in df.columns if c != TARGET_ENC_COL]
-    X = df[feature_cols].values
-    y = df[TARGET_ENC_COL].values
+    X = df[feature_cols].values.astype(np.float32)
+    y = df[TARGET_ENC_COL].values.astype(np.int64)
 
     if USE_TIME_SPLIT:
         split_idx = int(len(df) * (1 - TEST_SIZE))
@@ -319,12 +409,48 @@ if __name__ == "__main__":
     print(f"[train] Train size : {len(X_train)}")
     print(f"[train] Test size  : {len(X_test)}")
 
+    # ── Feature scaling ────────────────────────────────────────────────────────
+    # Critical for MLP — unlike tree-based models, MLPs are sensitive to scale.
+    # Fit only on train set to prevent data leakage.
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test  = scaler.transform(X_test)
+
+    # ── Build model ────────────────────────────────────────────────────────────
+
+    num_classes = len(target_enc.class_map_)
+    input_dim   = X_train.shape[1]
+
+    model = TrafficMLP(
+        input_dim    = input_dim,
+        hidden_dims  = HIDDEN_DIMS,
+        num_classes  = num_classes,
+        dropout_rate = DROPOUT_RATE,
+        batch_norm   = BATCH_NORM,
+    ).to(DEVICE)
+
+    print(f"\n[train] Model architecture:\n{model}")
+    print(f"[train] Trainable params: {sum(p.numel() for p in model.parameters() if p.requires_grad):,}")
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(
+        model.parameters(),
+        lr=LEARNING_RATE,
+        weight_decay=WEIGHT_DECAY,   # L2 regularisation
+    )
+    # Reduce LR when validation loss plateaus — helps squeeze out last gains
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode="min", patience=3, factor=0.5
+    )
+
+    train_loader, test_loader = make_loaders(X_train, y_train, X_test, y_test, BATCH_SIZE)
+
     # ── MLflow experiment ──────────────────────────────────────────────────────
 
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment(MLFLOW_EXPERIMENT)
- 
-    with mlflow.start_run(run_name="train_traffic_xgboost"):
+
+    with mlflow.start_run(run_name="train_traffic_mlp"):
 
         # Log preprocessing params
         mlflow.log_param("input_path",         INPUT_PATH)
@@ -342,46 +468,74 @@ if __name__ == "__main__":
         mlflow.log_param("random_state",       RANDOM_STATE)
         mlflow.log_param("n_train_samples",    len(X_train))
         mlflow.log_param("n_test_samples",     len(X_test))
-        mlflow.log_param("n_features",         len(feature_cols))
+        mlflow.log_param("n_features",         input_dim)
         mlflow.log_param("target_classes",     str(target_enc.class_map_))
 
-        # Log XGBoost hyperparams
-        mlflow.log_param("n_estimators",       N_ESTIMATORS)
-        mlflow.log_param("max_depth",          MAX_DEPTH)
+        # Log MLP hyperparams
+        mlflow.log_param("hidden_dims",        str(HIDDEN_DIMS))
+        mlflow.log_param("dropout_rate",       DROPOUT_RATE)
+        mlflow.log_param("batch_norm",         BATCH_NORM)
         mlflow.log_param("learning_rate",      LEARNING_RATE)
-        mlflow.log_param("subsample",          SUBSAMPLE)
-        mlflow.log_param("colsample_bytree",   COLSAMPLE_BYTREE)
-        mlflow.log_param("early_stopping_rounds", EARLY_STOPPING)
+        mlflow.log_param("weight_decay",       WEIGHT_DECAY)
+        mlflow.log_param("batch_size",         BATCH_SIZE)
+        mlflow.log_param("max_epochs",         MAX_EPOCHS)
+        mlflow.log_param("patience",           PATIENCE)
+        mlflow.log_param("device",             str(DEVICE))
 
-        # ── Train XGBoost ──────────────────────────────────────────────────────
+        # ── Training loop with early stopping ──────────────────────────────────
 
-        model = XGBClassifier(
-            n_estimators=N_ESTIMATORS,
-            max_depth=MAX_DEPTH,
-            learning_rate=LEARNING_RATE,
-            subsample=SUBSAMPLE,
-            colsample_bytree=COLSAMPLE_BYTREE,
-            use_label_encoder=False,
-            eval_metric="mlogloss",
-            random_state=RANDOM_STATE,
-            early_stopping_rounds=EARLY_STOPPING,
-        )
+        best_val_loss   = float("inf")
+        best_epoch      = 0
+        epochs_no_improve = 0
+        best_state_dict = None
 
-        model.fit(
-            X_train, y_train,
-            eval_set=[(X_test, y_test)],
-            verbose=50,
-        )
+        for epoch in range(1, MAX_EPOCHS + 1):
+            train_loss, train_acc = run_epoch(model, train_loader, criterion, optimizer)
+            val_loss,   val_acc   = run_epoch(model, test_loader,  criterion, optimizer=None)
 
-        # Log best iteration
-        mlflow.log_param("best_iteration", model.best_iteration)
+            scheduler.step(val_loss)
 
-        # ── Evaluate ───────────────────────────────────────────────────────────
+            # Log per-epoch metrics to MLflow
+            mlflow.log_metric("train_loss", train_loss, step=epoch)
+            mlflow.log_metric("train_acc",  train_acc,  step=epoch)
+            mlflow.log_metric("val_loss",   val_loss,   step=epoch)
+            mlflow.log_metric("val_acc",    val_acc,    step=epoch)
 
-        y_pred = model.predict(X_test)
+            if epoch % 5 == 0 or epoch == 1:
+                print(f"  Epoch {epoch:03d} | "
+                      f"train_loss={train_loss:.4f} train_acc={train_acc:.4f} | "
+                      f"val_loss={val_loss:.4f} val_acc={val_acc:.4f}")
+
+            # Early stopping: track best val loss, restore best weights at end
+            if val_loss < best_val_loss - 1e-5:
+                best_val_loss    = val_loss
+                best_epoch       = epoch
+                epochs_no_improve = 0
+                best_state_dict  = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            else:
+                epochs_no_improve += 1
+                if epochs_no_improve >= PATIENCE:
+                    print(f"\n[train] Early stopping at epoch {epoch} "
+                          f"(best epoch: {best_epoch}, best val_loss: {best_val_loss:.4f})")
+                    break
+
+        # Restore best weights
+        model.load_state_dict(best_state_dict)
+        mlflow.log_param("best_epoch",      best_epoch)
+        mlflow.log_param("best_val_loss",   round(best_val_loss, 6))
+
+        # ── Final evaluation ───────────────────────────────────────────────────
+
+        model.eval()
+        all_preds = []
+        with torch.no_grad():
+            for X_batch, _ in test_loader:
+                logits = model(X_batch.to(DEVICE))
+                all_preds.append(logits.argmax(dim=1).cpu().numpy())
+
+        y_pred = np.concatenate(all_preds)
         acc    = accuracy_score(y_test, y_pred)
 
-        # Per-class precision, recall, F1
         report_dict = classification_report(
             y_test, y_pred,
             target_names=[target_enc.class_map_[i] for i in sorted(target_enc.class_map_)],
@@ -396,17 +550,17 @@ if __name__ == "__main__":
         ))
 
         # Log aggregate metrics
-        mlflow.log_metric("test_accuracy",          acc)
-        mlflow.log_metric("test_macro_f1",          report_dict["macro avg"]["f1-score"])
-        mlflow.log_metric("test_macro_precision",   report_dict["macro avg"]["precision"])
-        mlflow.log_metric("test_macro_recall",      report_dict["macro avg"]["recall"])
-        mlflow.log_metric("test_weighted_f1",       report_dict["weighted avg"]["f1-score"])
-        mlflow.log_metric("test_weighted_precision",report_dict["weighted avg"]["precision"])
-        mlflow.log_metric("test_weighted_recall",   report_dict["weighted avg"]["recall"])
+        mlflow.log_metric("test_accuracy",           acc)
+        mlflow.log_metric("test_macro_f1",           report_dict["macro avg"]["f1-score"])
+        mlflow.log_metric("test_macro_precision",    report_dict["macro avg"]["precision"])
+        mlflow.log_metric("test_macro_recall",       report_dict["macro avg"]["recall"])
+        mlflow.log_metric("test_weighted_f1",        report_dict["weighted avg"]["f1-score"])
+        mlflow.log_metric("test_weighted_precision", report_dict["weighted avg"]["precision"])
+        mlflow.log_metric("test_weighted_recall",    report_dict["weighted avg"]["recall"])
 
-        # Log per-class metrics (useful for imbalanced traffic-state classes)
+        # Log per-class metrics
         for class_name, class_metrics in report_dict.items():
-            if isinstance(class_metrics, dict):  # skip "accuracy" scalar entry
+            if isinstance(class_metrics, dict):
                 safe_name = class_name.replace(" ", "_").replace("/", "_")
                 mlflow.log_metric(f"{safe_name}_f1",        class_metrics["f1-score"])
                 mlflow.log_metric(f"{safe_name}_precision", class_metrics["precision"])
@@ -417,25 +571,29 @@ if __name__ == "__main__":
         models_dir = os.path.join(project_root, "models")
         os.makedirs(models_dir, exist_ok=True)
 
-        model_path    = os.path.join(models_dir, "xgboost_traffic.pkl")
+        model_path    = os.path.join(models_dir, "mlp_traffic.pt")
         encoder_path  = os.path.join(models_dir, "label_encoder.pkl")
+        scaler_path   = os.path.join(models_dir, "scaler.pkl")
         features_path = os.path.join(models_dir, "feature_cols.pkl")
 
-        joblib.dump(model,        model_path)
+        torch.save(model.state_dict(), model_path)
         joblib.dump(target_enc,   encoder_path)
+        joblib.dump(scaler,       scaler_path)
         joblib.dump(feature_cols, features_path)
 
         mlflow.log_artifact(model_path)
         mlflow.log_artifact(encoder_path)
+        mlflow.log_artifact(scaler_path)
         mlflow.log_artifact(features_path)
-        mlflow.log_artifact(output_path)   # the preprocessed CSV
+        mlflow.log_artifact(output_path)   # preprocessed CSV
 
-        # Also log the model natively via mlflow.sklearn for the model registry
-        mlflow.sklearn.log_model(model, artifact_path="xgboost_model")
+        # Log model natively via mlflow.pytorch
+        mlflow.pytorch.log_model(model, artifact_path="mlp_model")
 
-        print(f"\n[train] Model saved   : {model_path}")
-        print(f"[train] Encoder saved : {encoder_path}")
-        print(f"[train] Features saved: {features_path}")
+        print(f"\n[train] Model saved     : {model_path}")
+        print(f"[train] Encoder saved   : {encoder_path}")
+        print(f"[train] Scaler saved    : {scaler_path}")
+        print(f"[train] Features saved  : {features_path}")
         print(f"[train] MLflow run logged to: {MLFLOW_TRACKING_URI}")
 
         print(df[TARGET_ENC_COL].value_counts(normalize=True))

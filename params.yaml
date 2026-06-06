@@ -27,13 +27,15 @@ train:
   random_state: 42
   test_size: 0.2
   use_time_split: true
-  model_type: "xgboost"
+  model_type: "mlp"
   mlflow_tracking_uri: "https://dagshub.com/TjanKazar/IIS_proj.mlflow"
-  mlflow_experiment: "traffic_xgboost_train"
-  xgboost:
-    n_estimators: 500
-    max_depth: 6
-    learning_rate: 0.05
-    subsample: 0.8
-    colsample_bytree: 0.8
-    early_stopping_rounds: 20
+  mlflow_experiment: "traffic_mlp_train"
+  mlp:
+    hidden_dims: [256, 128, 64]
+    dropout_rate: 0.3
+    batch_norm: true
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    batch_size: 512
+    max_epochs: 100
+    patience: 10

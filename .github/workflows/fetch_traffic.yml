@@ -78,24 +78,24 @@ jobs:
         run: |
           git push origin HEAD:main
 
-      - name: Prepare Netlify site
-        run: |
-          mkdir -p site
-          cp -r gx/uncommitted/data_docs/local_site site/gx
-          if [ ! -f src/reports/data_testing_report.html ]; then
-            echo "ERROR: data_testing_report.html not found!"
-            ls -la src/reports/ || echo "src/reports/ directory missing entirely"
-            exit 1
-          fi
-          cp src/reports/data_testing_report.html site/index.html
-          echo "site/ contents:"
-          ls -la site/
+      # - name: Prepare Netlify site
+      #   run: |
+      #     mkdir -p site
+      #     cp -r gx/uncommitted/data_docs/local_site site/gx
+      #     if [ ! -f src/reports/data_testing_report.html ]; then
+      #       echo "ERROR: data_testing_report.html not found!"
+      #       ls -la src/reports/ || echo "src/reports/ directory missing entirely"
+      #       exit 1
+      #     fi
+      #     cp src/reports/data_testing_report.html site/index.html
+      #     echo "site/ contents:"
+      #     ls -la site/
 
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: site
-          production-deploy: true
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      # - name: Deploy to Netlify
+      #   uses: nwtgck/actions-netlify@v1.2
+      #   with:
+      #     publish-dir: site
+      #     production-deploy: true
+      #   env:
+      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
