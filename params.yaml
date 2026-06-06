@@ -39,3 +39,15 @@ train:
     batch_size: 512
     max_epochs: 100
     patience: 10
+  chronos:
+    enabled: true
+    model_id: "amazon/chronos-t5-small"
+    context_len: 12          # 12 readings × 5 min = 1 hour of context
+    prediction_len: 6        # 6 steps × 5 min = 30 minutes ahead
+    target_numeric_cols:
+      - "Št. vozil [N/h]"
+      - "Hitrost [km/h]"
+      - "Razmik [s]"
+      - "Zasedenost [%]"
+    forecast_location: ["Šikole 3", "Kidričevo - Šikole"]
+ 
