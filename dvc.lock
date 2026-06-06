@@ -5,8 +5,8 @@ stages:
     deps:
     - path: src/traffic_scraper.py
       hash: md5
-      md5: 41e5791857f35c1014e28c7899ea1f25
-      size: 2586
+      md5: 5618a804d608870792c32f34f5dc95b3
+      size: 3572
     params:
       params.yaml:
         fetch.output: data/traffic.csv
@@ -14,19 +14,19 @@ stages:
     outs:
     - path: data/traffic.csv
       hash: md5
-      md5: fa50b488636780b268504f5bef382264
-      size: 1611598
+      md5: dea388f11be0c55d93e28c77b09ef6fb
+      size: 16146339
   preprocess:
     cmd: uv run python src/traffic_preprocess.py
     deps:
     - path: data/traffic.csv
       hash: md5
-      md5: fa50b488636780b268504f5bef382264
-      size: 1611598
+      md5: dea388f11be0c55d93e28c77b09ef6fb
+      size: 16146339
     - path: src/traffic_preprocess.py
       hash: md5
-      md5: ff7c294f07e1f75ccf344601f47d106d
-      size: 1647
+      md5: b9439fbe54d0ec05b8ec5aa48d733068
+      size: 2579
     params:
       params.yaml:
         preprocess.input: data/traffic.csv
@@ -34,13 +34,35 @@ stages:
     outs:
     - path: data/preprocessed/traffic.csv
       hash: md5
-      md5: 4cfd574e38ca9ef5f7c6d15949573139
-      size: 1587164
+      md5: e63fb725432ae28fe2143afa2dd49721
+      size: 16345131
   validate:
     cmd: "cd gx && uv run python run_checkpoint.py\n"
     deps:
     - path: data/preprocessed/
       hash: md5
-      md5: 1d8765a951e6ef50caefe587504e4d02.dir
-      size: 1587164
-      nfiles: 1
+      md5: 042f82ecd590aa9ae49e752dd772a5d9.dir
+      size: 16404843
+      nfiles: 2
+    outs:
+    - path: gx/uncommitted
+      hash: md5
+      md5: 06669b08daa4cc73cfe139a75b565049.dir
+      size: 5525537
+      nfiles: 50
+  test_data:
+    cmd: "uv run python src/data_test.py\n"
+    deps:
+    - path: data/preprocessed/traffic.csv
+      hash: md5
+      md5: e63fb725432ae28fe2143afa2dd49721
+      size: 16345131
+    - path: src/data_test.py
+      hash: md5
+      md5: 2c983df9ffcc76f0eefbcae593b0a1ea
+      size: 1580
+    outs:
+    - path: data/reference/traffic.csv
+      hash: md5
+      md5: a8278437486dca97b8b489e62e2a22a0
+      size: 16141838
