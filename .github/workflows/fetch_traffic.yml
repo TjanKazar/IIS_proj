@@ -96,8 +96,8 @@ jobs:
           file: api/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/iis-api:latest
-            ghcr.io/${{ github.repository_owner }}/iis-api:${{ github.sha }}
+            ghcr.io/tjankazar/iis-api:latest
+            ghcr.io/tjankazar/iis-api:${{ github.sha }}
 
       - name: Trigger Render deploy
         run: |
