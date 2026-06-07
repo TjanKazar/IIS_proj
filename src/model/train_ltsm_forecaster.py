@@ -23,7 +23,7 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, "src"))
 sys.path.insert(0, os.path.join(project_root, "src", "model"))
 
-from model.lstm_utils import LSTMQuantileForecaster, pinball_loss, QUANTILE_LEVELS
+from lstm_utils import LSTMQuantileForecaster, pinball_loss, QUANTILE_LEVELS
 
 
 def prepare_sequences(series: np.ndarray, context_len: int, pred_len: int):
