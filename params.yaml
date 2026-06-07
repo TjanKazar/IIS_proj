@@ -39,9 +39,8 @@ train:
     batch_size: 512
     max_epochs: 100
     patience: 10
-  chronos:
+  lstm:
     enabled: true
-    model_id: "amazon/chronos-bolt-small"
     context_len: 12          # 12 readings × 5 min = 1 hour of context
     prediction_len: 6        # 6 steps × 5 min = 30 minutes ahead
     target_numeric_cols:

@@ -19,8 +19,7 @@ dependencies = [
     "torch==2.2.2",
     "torchvision==0.17.2",
     "torchaudio==2.2.2",
-    "xgboost>=3.2.0",
-    "chronos-forecasting>=2.2.2",
+    "ml-dtypes>=0.4.1",
 ]
 
 [tool.uv.sources]

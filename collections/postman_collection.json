@@ -1,0 +1,174 @@
+{
+  "info": {
+    "name": "Traffic State Predictor API",
+    "description": "API for predicting traffic state using LSTM forecasters + MLP classifier.\n\nDeployed at: https://iis-api-latest.onrender.com\n\nEndpoints:\n- GET /health - Check if API is running\n- GET /info - Get model details\n- POST /predict - Classify from given metrics\n- POST /forecast - Forecast metrics then classify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://iis-api-latest.onrender.com",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the API is running and models are loaded."
+      }
+    },
+    {
+      "name": "Get Model Info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/info",
+          "host": ["{{base_url}}"],
+          "path": ["info"]
+        },
+        "description": "Get details about loaded models, features, and classes."
+      }
+    },
+    {
+      "name": "Predict - Medium Traffic",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"volume\": 1200.5,\n  \"speed\": 85.3,\n  \"headway\": 3.2,\n  \"occupancy\": 12.7\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": ["{{base_url}}"],
+          "path": ["predict"]
+        },
+        "description": "Classify traffic state from manually provided metrics (medium traffic scenario)."
+      }
+    },
+    {
+      "name": "Predict - Low Traffic",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"volume\": 500,\n  \"speed\": 110,\n  \"headway\": 8,\n  \"occupancy\": 5\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": ["{{base_url}}"],
+          "path": ["predict"]
+        },
+        "description": "Test with low traffic values (free-flow)."
+      }
+    },
+    {
+      "name": "Predict - Heavy Traffic",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"volume\": 2000,\n  \"speed\": 50,\n  \"headway\": 1.5,\n  \"occupancy\": 25\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": ["{{base_url}}"],
+          "path": ["predict"]
+        },
+        "description": "Test with heavy traffic values."
+      }
+    },
+    {
+      "name": "Predict - Traffic Jam",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"volume\": 2500,\n  \"speed\": 20,\n  \"headway\": 1.0,\n  \"occupancy\": 40\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/predict",
+          "host": ["{{base_url}}"],
+          "path": ["predict"]
+        },
+        "description": "Test with traffic jam values."
+      }
+    },
+    {
+      "name": "Forecast + Predict",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"location\": [\"A1\", \"Ljubljana\", \"smer Koper\"],\n  \"context_len\": 12,\n  \"prediction_len\": 6\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/forecast",
+          "host": ["{{base_url}}"],
+          "path": ["forecast"]
+        },
+        "description": "Run LSTM forecast for all 4 metrics, then classify traffic state.\n\nAdjust 'location' to match your actual data keys (e.g., ['Šikole 3', 'Kidričevo - Šikole'])."
+      }
+    },
+    {
+      "name": "Forecast - Your Location",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"location\": [\"Šikole 3\", \"Kidričevo - Šikole\"],\n  \"context_len\": 12,\n  \"prediction_len\": 6\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/forecast",
+          "host": ["{{base_url}}"],
+          "path": ["forecast"]
+        },
+        "description": "Forecast using your actual location from params.yaml (Šikole 3 / Kidričevo - Šikole)."
+      }
+    }
+  ]
+}

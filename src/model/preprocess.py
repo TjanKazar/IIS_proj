@@ -24,7 +24,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, TensorDataset
 
-from chronos_utils import (
+from model.lstm_utils import (
     _predict,
     evaluate_chronos_mae,
     forecast_all_metrics,
