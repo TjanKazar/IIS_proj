@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traffic Intelligence · Slovenia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Barlow+Condensed:wght@500;700;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg:       #f4f2ee;
+      --surface:  #ffffff;
+      --border:   #dbd9d3;
+      --border-hi:#b0ada5;
+      --text:     #1a1916;
+      --text-2:   #6b6860;
+      --text-3:   #a09e98;
+      --accent:   #1a6bff;
+      --accent-bg:#e8f0ff;
+
+      --n-bg: #eaf3de; --n-fg: #27500a; --n-dot: #639922;
+      --p-bg: #faeeda; --p-fg: #633806; --p-dot: #ba7517;
+      --z-bg: #faece7; --z-fg: #712b13; --z-dot: #993c1d;
+      --j-bg: #fcebeb; --j-fg: #791f1f; --j-dot: #a32d2d;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:      #131210;
+        --surface: #1c1a18;
+        --border:  #2e2c28;
+        --border-hi:#484540;
+        --text:    #e8e5de;
+        --text-2:  #908d85;
+        --text-3:  #5c5a55;
+        --accent:  #5b9aff;
+        --accent-bg:#1a2540;
+
+        --n-bg:#173404; --n-fg:#c0dd97; --n-dot:#97c459;
+        --p-bg:#412402; --p-fg:#fac775; --p-dot:#ef9f27;
+        --z-bg:#4a1b0c; --z-fg:#f0997b; --z-dot:#d85a30;
+        --j-bg:#501313; --j-fg:#f7c1c1; --j-dot:#e24b4a;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 40px 28px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 36px;
+    }
+
+    .wordmark {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .wordmark sup {
+      font-size: 9px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      color: var(--text-3);
+      vertical-align: super;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    #api-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-3); flex-shrink: 0;
+      transition: background 0.3s;
+    }
+    #api-dot.ok  { background: var(--n-dot); box-shadow: 0 0 5px var(--n-dot); }
+    #api-dot.err { background: var(--j-dot); }
+
+    /* ── Section label ── */
+    .label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 12px;
+    }
+
+    /* ── Location grid ── */
+    .loc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .loc-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 13px 15px;
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s;
+      position: relative;
+    }
+    .loc-card:hover { border-color: var(--border-hi); }
+    .loc-card.selected {
+      border-color: var(--accent);
+      border-width: 2px;
+      background: var(--accent-bg);
+    }
+    .loc-road {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 3px;
+    }
+    .loc-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .loc-dir {
+      font-size: 11px;
+      color: var(--text-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .badge-n { background: var(--n-bg); color: var(--n-fg); }
+    .badge-p { background: var(--p-bg); color: var(--p-fg); }
+    .badge-z { background: var(--z-bg); color: var(--z-fg); }
+    .badge-j { background: var(--j-bg); color: var(--j-fg); }
+
+    /* ── Info bar ── */
+    .info-bar {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .info-bar.visible { display: block; }
+    .info-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .metric-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .metric-chip {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 8px 12px;
+      flex: 1;
+      min-width: 90px;
+    }
+    .metric-chip-label {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 2px;
+    }
+    .metric-chip-val {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .metric-chip-unit {
+      font-size: 10px;
+      color: var(--text-2);
+      margin-left: 2px;
+    }
+
+    /* ── Buttons ── */
+    .action-row { display: flex; gap: 10px; margin-bottom: 36px; flex-wrap: wrap; }
+
+    button {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 22px;
+      border-radius: 5px;
+      border: 1px solid;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.12s;
+    }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #btn-predict {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    #btn-predict:hover:not(:disabled) { filter: brightness(1.1); }
+
+    #btn-forecast {
+      background: var(--surface);
+      border-color: var(--border-hi);
+      color: var(--text-2);
+    }
+    #btn-forecast:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Results ── */
+    .result-wrap {
+      animation: rise 0.25s ease;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-banner {
+      border-radius: 8px;
+      padding: 20px 24px;
+      border: 1px solid;
+    }
+    .result-banner.n { background: var(--n-bg); border-color: var(--n-dot); }
+    .result-banner.p { background: var(--p-bg); border-color: var(--p-dot); }
+    .result-banner.z { background: var(--z-bg); border-color: var(--z-dot); }
+    .result-banner.j { background: var(--j-bg); border-color: var(--j-dot); }
+
+    .result-state-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .result-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .result-state-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+    }
+    .n .result-state-text { color: var(--n-fg); }
+    .p .result-state-text { color: var(--p-fg); }
+    .z .result-state-text { color: var(--z-fg); }
+    .j .result-state-text { color: var(--j-fg); }
+
+    /* Probabilities */
+    .prob-section-label {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+    .prob-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 7px;
+    }
+    .prob-label {
+      font-size: 11px;
+      color: var(--text-2);
+      width: 138px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prob-track {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    @media (prefers-color-scheme: dark) {
+      .prob-track { background: rgba(255,255,255,0.1); }
+    }
+    .prob-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    }
+    .prob-pct {
+      font-size: 11px;
+      font-weight: 500;
+      width: 40px;
+      text-align: right;
+      flex-shrink: 0;
+      color: var(--text-2);
+    }
+
+    /* Forecast table */
+    .forecast-block {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+    @media (prefers-color-scheme: dark) {
+      .forecast-block { border-top-color: rgba(255,255,255,0.08); }
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    td {
+      padding: 5px 8px;
+      font-size: 12px;
+    }
+    .fc-metric-label {
+      color: var(--text-2);
+      white-space: nowrap;
+      font-size: 11px;
+      padding-left: 0;
+    }
+    .fc-val {
+      text-align: center;
+      font-weight: 500;
+    }
+    .fc-step {
+      font-size: 9px;
+      color: var(--text-3);
+      text-align: center;
+      display: block;
+    }
+
+    /* Error */
+    .error-box {
+      background: var(--j-bg);
+      border: 1px solid var(--j-dot);
+      border-radius: 8px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 12px;
+      color: var(--j-fg);
+    }
+    .error-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { display: inline-block; animation: spin 0.8s linear infinite; }
+
+    /* Data note */
+    .data-note {
+      font-size: 10px;
+      color: var(--text-3);
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <header>
+    <div class="wordmark">Traffic<span style="color:var(--accent)">TION</span><sup>SLOVENIJA</sup></div>
+    <div class="status-row">
+      <span id="api-dot"></span>
+      <span id="api-text">checking api…</span>
+    </div>
+  </header>
+
+  <!-- Location selector -->
+  <div class="label">Measurement location</div>
+  <div class="loc-grid" id="loc-grid"></div>
+
+  <div class="label">Custom forecast location</div>
+
+<div class="info-bar visible" style="display:block;margin-bottom:28px;">
+  <div class="metric-row">
+
+    <div class="metric-chip">
+      <div class="metric-chip-label">Road</div>
+      <input
+        id="custom-road"
+        type="text"
+        placeholder="AC-A5"
+        style="width:100%;border:none;background:transparent;color:var(--text);font-family:inherit;font-size:14px;"
+      />
+    </div>
+
+    <div class="metric-chip">
+      <div class="metric-chip-label">Location</div>
+      <input
+        id="custom-name"
+        type="text"
+        placeholder="Zamarkova AC"
+        style="width:100%;border:none;background:transparent;color:var(--text);font-family:inherit;font-size:14px;"
+      />
+    </div>
+
+    <div class="metric-chip">
+      <div class="metric-chip-label">Direction</div>
+      <input
+        id="custom-dir"
+        type="text"
+        placeholder="smer HUN (Pince) (v)"
+        style="width:100%;border:none;background:transparent;color:var(--text);font-family:inherit;font-size:14px;"
+      />
+    </div>
+
+  </div>
+
+  <div style="margin-top:14px;">
+    <button id="btn-custom-forecast" onclick="doCustomForecast()">
+      ◈ Forecast Custom Location
+    </button>
+  </div>
+</div>
+  <!-- Selected info bar -->
+  <div class="info-bar" id="info-bar">
+    <div class="info-title" id="info-title"></div>
+    <div class="metric-row" id="info-metrics"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-row">
+    <button id="btn-predict" disabled onclick="doPredict()">
+      ⚡ Predict now
+    </button>
+    <button id="btn-forecast" disabled onclick="doForecast()">
+      ◈ AI Forecast
+    </button>
+  </div>
+
+  <!-- Results -->
+  <div id="results"></div>
+
+  <!-- Footer -->
+  <div class="data-note">
+    <span>LSTM forecasters + MLP classifier · <a href="https://iis-api-latest.onrender.com/info" target="_blank" style="color:inherit;">model info</a></span>
+    <span>Reference data: 04.06.2026 13:10 · Render free tier — cold start may take ~30s</span>
+  </div>
+
+</div>
+
+<script>
+const API = 'https://iis-api-latest.onrender.com';
+
+// AC-A5,Brengova AC,smer HUN (Pince) (v)
+// C-A5,Cenkova AC,smer HUN (Pince) (v),60,107,63.3,0.9,05.06.2026 02:25:00,Normalen promet
+// AC-A5,Dolinsko AC,smer HUN (Pince) (v),84,97,47.5,1.6,05.06.2026 02:25:00,Normalen promet
+// AC-A5,Dragučova AC,smer HUN (Pince) (v),108,99,28.4,1.4,05.06.2026 02:25:00,Normalen promet
+// AC-A5,Gančani AC,smer HUN (Pince) (v),72,102,50.8,1.4,05.06.2026 02:25:00,Normalen promet
+// AC-A5,Lormanje AC,smer HUN (Pince) (v),108,89,26.1,1.6,05.06.2026 02:25:00,Normalen promet
+// AC-A5,Mostje AC,smer HUN (Pince) (v),96,91,22.3,1.8,05.06.2026 02:25:00,Normalen promet
+// AC-A5,Pince AC,smer HUN (Pince) (v),84,76,71.0,1.2,05.06.2026 02:25:00,Normalen promet
+// AC-A5,Vučja vas AC,smer HUN (Pince) (v),0,0,0.0,0.0,05.06.2026 02:25:00,Ni podatka
+// AC-A5,Zamarkova AC,smer HUN (Pince) (v),96,96,50.1,1.5,05.06.2026 02:25:00,Normalen promet
+const LOCATIONS = [
+  {
+    road:'C-A5',
+    name:'Cenkova AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:60,
+    speed:107,
+    headway:63.3,
+    occupancy:0.9
+  },
+  {
+    road:'AC-A5',
+    name:'Dolinsko AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:84,
+    speed:97,
+    headway:47.5,
+    occupancy:1.6
+  },
+  {
+    road:'AC-A5',
+    name:'Dragučova AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:108,
+    speed:99,
+    headway:28.4,
+    occupancy:1.4
+  },
+  {
+    road:'AC-A5',
+    name:'Gančani AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:72,
+    speed:102,
+    headway:50.8,
+    occupancy:1.4
+  },
+  {
+    road:'AC-A5',
+    name:'Lormanje AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:108,
+    speed:89,
+    headway:26.1,
+    occupancy:1.6
+  },
+  {
+    road:'AC-A5',
+    name:'Mostje AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:96,
+    speed:91,
+    headway:22.3,
+    occupancy:1.8
+  },
+  {
+    road:'AC-A5',
+    name:'Pince AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:84,
+    speed:76,
+    headway:71.0,
+    occupancy:1.2
+  },
+  {
+    road:'AC-A5',
+    name:'Vučja vas AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:0,
+    speed:0,
+    headway:0.0,
+    occupancy:0.0
+  },
+  {
+    road:'AC-A5',
+    name:'Zamarkova AC',
+    dir:'smer HUN (Pince) (v)',
+    volume:96,
+    speed:96,
+    headway:50.1,
+    occupancy:1.5
+  }
+];
+
+
+const STATE = {
+  'Normalen promet': { css:'n', dot:'var(--n-dot)', bar:'#639922' },
+  'Povečan promet':  { css:'p', dot:'var(--p-dot)', bar:'#ba7517' },
+  'Zgoščen promet':  { css:'z', dot:'var(--z-dot)', bar:'#d85a30' },
+  'Zastoj':          { css:'j', dot:'var(--j-dot)', bar:'#a32d2d' },
+};
+
+const BADGE_CLASS = {
+  'Normalen promet':'badge-n',
+  'Povečan promet': 'badge-p',
+  'Zgoščen promet': 'badge-z',
+  'Zastoj':         'badge-j',
+};
+
+const METRIC_META = {
+  'Št. vozil [N/h]': { label:'Volume',   unit:'N/h'  },
+  'Hitrost [km/h]':  { label:'Speed',    unit:'km/h' },
+  'Razmik [s]':      { label:'Headway',  unit:'s'    },
+  'Zasedenost [%]':  { label:'Occupancy',unit:'%'    },
+};
+
+let sel = null;
+
+// Build cards
+const grid = document.getElementById('loc-grid');
+LOCATIONS.forEach((loc, i) => {
+  const st = STATE[loc.state] || STATE['Normalen promet'];
+  const card = document.createElement('div');
+  card.className = 'loc-card';
+  card.id = 'card-' + i;
+  card.innerHTML =
+    '<div class="loc-road">' + loc.road + '</div>' +
+    '<div class="loc-name">' + loc.name + '</div>' +
+    '<div class="loc-dir">' + loc.dir + '</div>' +
+    '<span class="badge ' + BADGE_CLASS[loc.state] + '">' +
+      '<span class="badge-dot" style="background:' + st.dot + ';" aria-hidden="true"></span>' +
+      loc.state +
+    '</span>';
+  card.addEventListener('click', function(){ selectLoc(i); });
+  grid.appendChild(card);
+});
+
+
+
+function selectLoc(i) {
+  document.querySelectorAll('.loc-card').forEach(function(c){ c.classList.remove('selected'); });
+  document.getElementById('card-' + i).classList.add('selected');
+  sel = LOCATIONS[i];
+
+  var bar = document.getElementById('info-bar');
+  bar.classList.add('visible');
+  document.getElementById('info-title').textContent =
+    sel.road + ' — ' + sel.name + ' · ' + sel.dir;
+
+  var chips = [
+    { label:'Volume',   value:sel.volume,   unit:'N/h'  },
+    { label:'Speed',    value:sel.speed,    unit:'km/h' },
+    { label:'Headway',  value:sel.headway,  unit:'s'    },
+    { label:'Occupancy',value:sel.occupancy,unit:'%'    },
+  ];
+  document.getElementById('info-metrics').innerHTML = chips.map(function(c){
+    return '<div class="metric-chip">' +
+      '<div class="metric-chip-label">' + c.label + '</div>' +
+      '<div class="metric-chip-val">' + c.value + '<span class="metric-chip-unit">' + c.unit + '</span></div>' +
+    '</div>';
+  }).join('');
+
+  document.getElementById('btn-predict').disabled = false;
+  document.getElementById('btn-forecast').disabled = false;
+  document.getElementById('results').innerHTML = '';
+}
+
+function setBusy(btnId, busy) {
+  var btn = document.getElementById(btnId);
+  var other = document.getElementById(btnId === 'btn-predict' ? 'btn-forecast' : 'btn-predict');
+  if (busy) {
+    btn.disabled = true;
+    other.disabled = true;
+    btn._orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spin" aria-hidden="true">↻</span> Loading…';
+  } else {
+    btn.innerHTML = btn._orig;
+    btn.disabled = false;
+    if (sel) other.disabled = false;
+  }
+}
+
+function showResult(data, type) {
+  var st = STATE[data.predicted_stanje] || STATE['Normalen promet'];
+  var probs = Object.entries(data.probabilities).sort(function(a,b){ return b[1]-a[1]; });
+
+  var probRows = probs.map(function(entry){
+    var label = entry[0], pct = entry[1];
+    var s = STATE[label] || { bar:'#888780' };
+    return '<div class="prob-row">' +
+      '<span class="prob-label">' + label + '</span>' +
+      '<div class="prob-track"><div class="prob-fill" style="width:' + (pct*100).toFixed(1) + '%;background:' + s.bar + ';"></div></div>' +
+      '<span class="prob-pct">' + (pct*100).toFixed(1) + '%</span>' +
+    '</div>';
+  }).join('');
+
+  var fcastBlock = '';
+  if (data.forecasted_metrics && Object.keys(data.forecasted_metrics).length) {
+    var steps = data.forecast_step_minutes || [];
+    var rows = Object.entries(data.forecasted_metrics).map(function(entry){
+      var key = entry[0], vals = entry[1];
+      var m = METRIC_META[key] || { label: key, unit: '' };
+      var cells = vals.map(function(v, idx){
+        return '<td class="fc-val">' + (typeof v === 'number' ? v.toFixed(1) : v) +
+          '<span class="fc-step">+' + (steps[idx] || (idx+1)*5) + 'm</span></td>';
+      }).join('');
+      return '<tr><td class="fc-metric-label">' + m.label + ' <span style="opacity:0.5;">' + m.unit + '</span></td>' + cells + '</tr>';
+    }).join('');
+
+    fcastBlock =
+      '<div class="forecast-block">' +
+        '<div class="prob-section-label" style="margin-bottom:8px;">LSTM forecast — next 30 minutes</div>' +
+        '<div style="overflow-x:auto;"><table><tbody>' + rows + '</tbody></table></div>' +
+      '</div>';
+  }
+
+  var typeLabel = type === 'forecast' ? 'AI Forecast + Classification' : 'Instant Classification';
+
+  document.getElementById('results').innerHTML =
+    '<div class="result-wrap">' +
+      '<div class="label" style="margin-bottom:10px;">' + typeLabel + '</div>' +
+      '<div class="result-banner ' + st.css + '">' +
+        '<div class="result-state-line">' +
+          '<span class="result-dot" style="background:' + st.dot + ';" aria-hidden="true"></span>' +
+          '<span class="result-state-text">' + data.predicted_stanje + '</span>' +
+        '</div>' +
+        '<div class="prob-section-label">Classification confidence</div>' +
+        probRows +
+        fcastBlock +
+      '</div>' +
+    '</div>';
+}
+
+function showError(msg) {
+  document.getElementById('results').innerHTML =
+    '<div class="result-wrap">' +
+    '<div class="error-box">' +
+      '<span class="error-icon">⚠</span>' +
+      '<div>' +
+        '<div style="font-weight:500;margin-bottom:4px;">Request failed</div>' +
+        '<div>' + msg + '</div>' +
+        '<div style="margin-top:6px;opacity:0.75;">The API runs on Render free tier. If it\'s been idle, the first request may take ~30 seconds to wake up — try again shortly.</div>' +
+      '</div>' +
+    '</div>' +
+    '</div>';
+}
+
+async function doPredict() {
+  if (!sel) return;
+  setBusy('btn-predict', true);
+  try {
+    var res = await fetch(API + '/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ volume:sel.volume, speed:sel.speed, headway:sel.headway, occupancy:sel.occupancy }),
+    });
+    if (!res.ok) {
+      var e = await res.json().catch(function(){ return {}; });
+      throw new Error(e.detail || 'HTTP ' + res.status);
+    }
+    showResult(await res.json(), 'predict');
+  } catch(e) {
+    showError(e.message);
+  } finally {
+    setBusy('btn-predict', false);
+  }
+}
+
+async function doForecast() {
+  if (!sel) return;
+  setBusy('btn-forecast', true);
+  try {
+    var res = await fetch(API + '/forecast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ location:[sel.road, sel.name, sel.dir], context_len:12, prediction_len:6 }),
+    });
+    if (!res.ok) {
+      var e = await res.json().catch(function(){ return {}; });
+      throw new Error(e.detail || 'HTTP ' + res.status);
+    }
+    showResult(await res.json(), 'forecast');
+  } catch(e) {
+    showError(e.message);
+  } finally {
+    setBusy('btn-forecast', false);
+  }
+}
+
+async function doCustomForecast() {
+
+  const road = document.getElementById('custom-road').value.trim();
+  const name = document.getElementById('custom-name').value.trim();
+  const dir  = document.getElementById('custom-dir').value.trim();
+
+  if (!road || !name || !dir) {
+    showError('Please fill Road, Location and Direction.');
+    return;
+  }
+
+  setBusy('btn-custom-forecast', true);
+
+  try {
+
+    const res = await fetch(API + '/forecast', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        location: [road, name, dir],
+        context_len: 12,
+        prediction_len: 6
+      })
+    });
+
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.detail || ('HTTP ' + res.status));
+    }
+
+    showResult(await res.json(), 'forecast');
+
+  } catch (e) {
+
+    showError(e.message);
+
+  } finally {
+
+    setBusy('btn-custom-forecast', false);
+
+  }
+}
+// API health check
+(async function() {
+  var dot  = document.getElementById('api-dot');
+  var text = document.getElementById('api-text');
+  try {
+    var r = await fetch(API + '/health');
+    var d = await r.json();
+    if (d.status === 'ok') {
+      dot.className = 'ok';
+      text.textContent = 'API online' + (d.forecasters_loaded ? '' : ' · no forecasters');
+    } else {
+      dot.className = 'err';
+      text.textContent = 'API degraded';
+    }
+  } catch(_) {
+    dot.className = 'err';
+    text.textContent = 'API offline (cold start?)';
+  }
+})();
+</script>
+</body>
+</html>
