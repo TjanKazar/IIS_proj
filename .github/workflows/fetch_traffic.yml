@@ -3,7 +3,8 @@ name: Traffic DVC Pipeline
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/30 * * * *'
+    #runs every day at midnight
+    - cron: '0 16 * * *'
 permissions:
   contents: read
   packages: write

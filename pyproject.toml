@@ -20,6 +20,8 @@ dependencies = [
     "torchvision==0.17.2",
     "torchaudio==2.2.2",
     "ml-dtypes>=0.4.1",
+    "streamlit>=1.58.0",
+    "plotly>=5.24.1",
 ]
 
 [tool.uv.sources]
