@@ -57,6 +57,12 @@ jobs:
           uv run dvc repro
           uv run dvc push
 
+      - name: Upload trained models (for Docker build)
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-models
+          path: models/
+
       - name: Commit artifacts
         id: commit
         run: |
@@ -81,6 +87,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Download trained models
+        uses: actions/download-artifact@v4
+        with:
+          name: trained-models
+          path: models/
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3

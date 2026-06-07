@@ -11,10 +11,14 @@ COPY api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
-COPY models/ ./models/
 COPY api/app.py .
 COPY params.yaml .
-COPY data/ ./data/
+
+# Seed data baked into the image
+COPY api/data/ ./data/
+
+# Models will be provided by CI artifact, but keep COPY for local builds
+COPY models/ ./models/
 
 ENV PYTHONPATH=/app
 
