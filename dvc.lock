@@ -67,23 +67,23 @@ stages:
       md5: d5eb555d941ce168a570cdc6f129d47d
       size: 16408358
   train:
-    cmd: "uv run --env-file .env python src/model/preprocess.py\ngit commit -am \"\
-      Updated model on `date` with DVC pipeline and GitHub workflows\" || true\ngit
-      push || true\nuv run dvc push || true\n"
+    cmd: "uv run python src/model/preprocess.py\ngit commit -am \"Updated model on
+      `date` with DVC pipeline and GitHub workflows\" || true\ngit push -u origin
+      main --force || true\nuv run dvc push || true\n"
     deps:
     - path: data/preprocessed/traffic.csv
       hash: md5
-      md5: d9688be6a4f49edb9db0dce2cefa587d
-      size: 10683261
+      md5: 4e80cbfdb7a916e751c6151f2f16e46c
+      size: 10683263
     - path: data/reference/traffic.csv
       hash: md5
-      md5: 01a6934254c1d39d4df5d4fd52f971b2
-      size: 16275256
+      md5: d5eb555d941ce168a570cdc6f129d47d
+      size: 16408358
     - path: gx/uncommitted
       hash: md5
-      md5: 8e3cc6336a059db857efb791c32682b1.dir
-      size: 5625378
-      nfiles: 52
+      md5: 1a14c4b3b739b1979723c015b4c7c6bc.dir
+      size: 5725204
+      nfiles: 54
     - path: src/model/preprocess.py
       hash: md5
       md5: dd56c3e85dca47855e23ef9c06c22947
@@ -97,6 +97,6 @@ stages:
     outs:
     - path: models/
       hash: md5
-      md5: fbf68e3df7afda4a18b15446d995f70d.dir
-      size: 3900352
+      md5: c55d0fd92c86f919f02600b9b90b4ae0.dir
+      size: 3900160
       nfiles: 11
