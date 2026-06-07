@@ -44,7 +44,7 @@ stages:
 
   train:
     cmd: |
-      uv run python src/model/preprocess.py
+      uv run --env-file .env python src/model/preprocess.py
       git commit -am "Updated model on `date` with DVC pipeline and GitHub workflows" || true
       git push || true
       uv run dvc push || true

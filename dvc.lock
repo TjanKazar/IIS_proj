@@ -14,15 +14,15 @@ stages:
     outs:
     - path: data/traffic.csv
       hash: md5
-      md5: dea388f11be0c55d93e28c77b09ef6fb
-      size: 16146339
+      md5: 12084e93de9364dd0d4ddd41d6ef4072
+      size: 16279757
   preprocess:
     cmd: uv run python src/traffic_preprocess.py
     deps:
     - path: data/traffic.csv
       hash: md5
-      md5: dea388f11be0c55d93e28c77b09ef6fb
-      size: 16146339
+      md5: 12084e93de9364dd0d4ddd41d6ef4072
+      size: 16279757
     - path: src/traffic_preprocess.py
       hash: md5
       md5: b9439fbe54d0ec05b8ec5aa48d733068
@@ -34,29 +34,29 @@ stages:
     outs:
     - path: data/preprocessed/traffic.csv
       hash: md5
-      md5: e63fb725432ae28fe2143afa2dd49721
-      size: 16345131
+      md5: 1fab3396d43a242500f90e5a11ba5c66
+      size: 16480045
   validate:
     cmd: "cd gx && uv run python run_checkpoint.py\n"
     deps:
     - path: data/preprocessed/
       hash: md5
-      md5: 042f82ecd590aa9ae49e752dd772a5d9.dir
-      size: 16404843
+      md5: 4b94ea9413de4d9ba606db3d58297734.dir
+      size: 16539757
       nfiles: 2
     outs:
     - path: gx/uncommitted
       hash: md5
-      md5: 06669b08daa4cc73cfe139a75b565049.dir
-      size: 5525537
-      nfiles: 50
+      md5: 8e3cc6336a059db857efb791c32682b1.dir
+      size: 5625378
+      nfiles: 52
   test_data:
     cmd: "uv run python src/data_test.py\n"
     deps:
     - path: data/preprocessed/traffic.csv
       hash: md5
-      md5: e63fb725432ae28fe2143afa2dd49721
-      size: 16345131
+      md5: 1fab3396d43a242500f90e5a11ba5c66
+      size: 16480045
     - path: src/data_test.py
       hash: md5
       md5: 2c983df9ffcc76f0eefbcae593b0a1ea
@@ -64,5 +64,5 @@ stages:
     outs:
     - path: data/reference/traffic.csv
       hash: md5
-      md5: a8278437486dca97b8b489e62e2a22a0
-      size: 16141838
+      md5: 01a6934254c1d39d4df5d4fd52f971b2
+      size: 16275256
