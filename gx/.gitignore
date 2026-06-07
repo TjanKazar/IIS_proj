@@ -1,2 +1,3 @@
 # Ignore the contents of the uncommitted folder
 uncommitted/*
+/uncommitted
